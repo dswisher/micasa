@@ -11,6 +11,7 @@ wheels/
 
 # Docker build markers
 docker/.ubuntu24
+docker/.ubuntu22
 docker/.amazonlinux2023
 docker/.debian
 docker/.fedora
