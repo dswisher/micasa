@@ -1,0 +1,12 @@
+{
+    "names":
+    {
+        "brew": "eza"
+    },
+    "version_check":
+    {
+        "executable": "eza",
+        "arg": "--version",
+        "regex": "v([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}

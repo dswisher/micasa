@@ -45,12 +45,13 @@ class Manifest:
             if not line or line.startswith('#'):
                 continue
 
-            if ':' not in line:
-                continue
-
-            name, version_spec = line.split(':', 1)
-            name = name.strip()
-            version_spec = version_spec.strip()
+            if ':' in line:
+                name, version_spec = line.split(':', 1)
+                name = name.strip()
+                version_spec = version_spec.strip()
+            else:
+                name = line
+                version_spec = ""
 
             manifest.packages.append(Package(name, version_spec))
 

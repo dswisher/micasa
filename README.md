@@ -53,6 +53,10 @@ Here is a short example:
     uv: ~= 0.9.17
     chezmoi: ~= 2.68.1
 
+If there is no preference for the version, the colon and version may be omitted.
+In other words, this is a valid entry:
+
+    eza
 
 ## Blueprints
 

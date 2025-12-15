@@ -7,6 +7,6 @@
     {
         "executable": "chezmoi",
         "arg": "--version",
-        "regex": "chezmoi version ([0-9]+\\.[0-9]+\\.[0-9]+)"
+        "regex": "chezmoi version v([0-9]+\\.[0-9]+\\.[0-9]+)"
     }
 }
