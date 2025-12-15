@@ -30,14 +30,24 @@ class Manifest:
 
         Returns:
             the loaded manifest.
+
+        Raises:
+            SystemExit: If the manifest file does not exist.
         """
         if path is None:
             path = os.path.expanduser("~/.config/micasa/micasa.txt")
 
         manifest = cls()
 
-        with open(path, 'r') as f:
-            manifest.raw_content = f.read()
+        try:
+            with open(path, 'r') as f:
+                manifest.raw_content = f.read()
+        except FileNotFoundError:
+            print(f"Error: Manifest file not found at: {path}")
+            print()
+            print("Please create a manifest file at the default location or specify a path.")
+            print("See the documentation for manifest file format.")
+            raise SystemExit(1)
 
         # Parse the manifest content
         for line in manifest.raw_content.splitlines():

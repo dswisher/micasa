@@ -70,3 +70,8 @@ If you wish to make changes to the code, you should install some additional depe
 
     uv sync --extra dev
 
+
+## Testing in Docker
+
+    docker run --interactive --tty --rm amazonlinux:2023 /bin/bash
+
