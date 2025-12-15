@@ -1,7 +1,12 @@
 {
     "names":
     {
-        "brew": "curl"
+        "brew": "curl",
+        "apt-get":
+        {
+            "ubuntu22": "curl",
+            "ubuntu24": "curl"
+        }
     },
     "version_check":
     {

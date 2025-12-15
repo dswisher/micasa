@@ -30,7 +30,7 @@ After building, use the test script:
 ```bash
 ./scripts/docker-shell.sh ubuntu24
 ./scripts/docker-shell.sh amazonlinux2023
-./scripts/docker-shell.sh debian
+./scripts/docker-shell.sh debian12
 ./scripts/docker-shell.sh fedora
 ```
 

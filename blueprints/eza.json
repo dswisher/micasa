@@ -1,7 +1,11 @@
 {
     "names":
     {
-        "brew": "eza"
+        "brew": "eza",
+        "apt-get":
+        {
+            "ubuntu24": "eza"
+        }
     },
     "version_check":
     {

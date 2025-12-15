@@ -18,7 +18,7 @@ if [ $# -eq 0 ]; then
     echo "Examples:"
     echo "    $0 amazonlinux2023"
     echo "    $0 ubuntu24"
-    echo "    $0 debian"
+    echo "    $0 debian12"
     echo "    $0 fedora"
     echo ""
     echo "To see a list of available images, do:"
@@ -35,7 +35,7 @@ MANIFEST_PATH="$HOME/.config/micasa/micasa.txt"
 MANIFEST_VOLUME=""
 
 if [ -f "$MANIFEST_PATH" ]; then
-    MANIFEST_VOLUME="--volume $MANIFEST_PATH:/root/.config/micasa/micasa.txt:ro"
+    MANIFEST_VOLUME="--volume $MANIFEST_PATH:/home/micasa/.config/micasa/micasa.txt:ro"
     MANIFEST_STATUS="yes (read-only)"
 else
     MANIFEST_STATUS="no (file not found at $MANIFEST_PATH)"

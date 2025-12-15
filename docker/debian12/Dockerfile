@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM debian:bookworm
 
 # Install Python, sudo, and other tools needed for testing
 RUN apt-get update && apt-get install -y \

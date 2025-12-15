@@ -1,7 +1,11 @@
 {
     "names":
     {
-        "brew": "neovim"
+        "brew": "neovim",
+        "apt-get":
+        {
+            "ubuntu24": "neovim"
+        }
     },
     "version_check":
     {
