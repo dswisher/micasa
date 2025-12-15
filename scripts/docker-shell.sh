@@ -10,17 +10,23 @@ set -e
 if [ $# -eq 0 ]; then
     echo "Error: No image name provided"
     echo ""
-    echo "Usage: $0 <image-name>"
+    echo "Usage: $0 <image-suffix>"
+    echo ""
+    echo "The image suffix is the last part of the test image name:"
+    echo "    micasa-test-ubuntu24 -> ubuntu24"
     echo ""
     echo "Examples:"
-    echo "  $0 amazonlinux:2023"
-    echo "  $0 ubuntu:24.04"
-    echo "  $0 debian:bookworm"
-    echo "  $0 fedora:latest"
+    echo "    $0 amazonlinux2023"
+    echo "    $0 ubuntu24"
+    echo "    $0 debian"
+    echo "    $0 fedora"
+    echo ""
+    echo "To see a list of available images, do:"
+    echo "    make docker-list"
     exit 1
 fi
 
-IMAGE_NAME="$1"
+IMAGE_NAME="micasa-test-$1"
 # Get the project root directory (parent of scripts directory)
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -49,3 +55,4 @@ docker run \
     --workdir /workspace \
     "$IMAGE_NAME" \
     /bin/bash
+

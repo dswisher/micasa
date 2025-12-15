@@ -7,10 +7,18 @@ def run(args):
     """Run the status command."""
     manifest = Manifest.load()
 
-    print(f"Checking {len(manifest.packages)} packages...")
+    # Filter packages if a specific package was requested
+    packages_to_check = manifest.packages
+    if args.package:
+        packages_to_check = [p for p in manifest.packages if p.name == args.package]
+        if not packages_to_check:
+            print(f"Error: Package '{args.package}' not found in manifest")
+            return
+
+    print(f"Checking {len(packages_to_check)} package{'s' if len(packages_to_check) != 1 else ''}...")
     print()
 
-    for package in manifest.packages:
+    for package in packages_to_check:
         blueprint = Blueprint.load(package.name)
 
         if blueprint is None:

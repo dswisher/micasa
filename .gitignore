@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Docker build markers
+docker/.ubuntu24
+docker/.amazonlinux2023
+docker/.debian
+docker/.fedora
