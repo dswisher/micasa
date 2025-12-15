@@ -1,0 +1,12 @@
+{
+    "names":
+    {
+        "brew": "chezmoi"
+    },
+    "version_check":
+    {
+        "executable": "chezmoi",
+        "arg": "--version",
+        "regex": "chezmoi version ([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}

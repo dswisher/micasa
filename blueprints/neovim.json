@@ -1,0 +1,12 @@
+{
+    "names":
+    {
+        "brew": "neovim"
+    },
+    "version_check":
+    {
+        "executable": "nvim",
+        "arg": "--version",
+        "regex": "NVIM v([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}

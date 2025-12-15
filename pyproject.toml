@@ -1,0 +1,26 @@
+[project]
+name = "micasa"
+version = "0.1.0"
+description = "A tool to help install a desired set of packages on a machine."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pyright",
+    "pydoclint",
+]
+
+[tool.pydoclint]
+style = 'google'
+exclude = '\.git|\.tox|\.venv|tests'
+arg-type-hints-in-docstring = false
+check-return-types = false  # Disable DOC203 - return type checking
+# require-return-section-when-returning-nothing = false
+# allow-init-docstring = true
+# check-yield-types = false  # Disable DOC403/DOC404 - yield type checking
+# skip-checking-short-docstrings = false
+# check-class-attributes = false  # Disable DOC601/DOC603 - class attribute documentation
+
