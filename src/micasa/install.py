@@ -1,4 +1,5 @@
 import subprocess
+from typing import Optional
 
 from micasa.blueprint import Blueprint
 from micasa.executable_finder import ExecutableFinder
@@ -39,7 +40,11 @@ def run(args):
     if detector.is_macos():
         _install_macos(args.package, blueprint)
     elif detector.is_ubuntu():
-        _install_ubuntu(args.package, blueprint, detector)
+        distro_key = detector.get_ubuntu_key()
+        _install_apt_get(args.package, blueprint, distro_key, "Ubuntu", detector.get_version_id())
+    elif detector.is_debian():
+        distro_key = detector.get_debian_key()
+        _install_apt_get(args.package, blueprint, distro_key, "Debian", detector.get_version_id())
     elif detector.is_amazonlinux():
         _install_amazonlinux(args.package, blueprint, detector)
     else:
@@ -92,22 +97,23 @@ def _install_macos(package_name: str, blueprint: Blueprint):
         print(f"brew install exited with code {e.returncode}")
 
 
-def _install_ubuntu(package_name: str, blueprint: Blueprint, detector: PlatformDetector):
-    """Install a package on Ubuntu using apt-get.
+def _install_apt_get(package_name: str, blueprint: Blueprint, distro_key: Optional[str], distro_name: str, version_id: Optional[str]):
+    """Install a package using apt-get (for Ubuntu, Debian, etc.).
 
     Args:
         package_name: The name of the package to install
         blueprint: The package blueprint
-        detector: The platform detector
+        distro_key: The distribution version key (e.g., 'ubuntu22', 'debian12')
+        distro_name: The distribution name for display (e.g., 'Ubuntu', 'Debian')
+        version_id: The version ID for display (e.g., '22.04', '12')
 
     Returns:
         None
     """
-    # Get the Ubuntu version key
-    ubuntu_key = detector.get_ubuntu_key()
-    if not ubuntu_key:
-        print("Error: Unable to determine Ubuntu version")
-        print(f"Version ID: {detector.get_version_id()}")
+    # Check if we have a distribution key
+    if not distro_key:
+        print(f"Error: Unable to determine {distro_name} version")
+        print(f"Version ID: {version_id}")
         return
 
     # Check if apt-get is installed
@@ -118,15 +124,15 @@ def _install_ubuntu(package_name: str, blueprint: Blueprint, detector: PlatformD
         return
 
     # Get the apt-get package name from the blueprint
-    apt_get_name = blueprint.get_apt_get_name(ubuntu_key)
+    apt_get_name = blueprint.get_apt_get_name(distro_key)
     if not apt_get_name:
         print(f"Error: No apt-get package name specified in blueprint for '{package_name}'")
-        print(f"Ubuntu version: {ubuntu_key}")
+        print(f"{distro_name} version: {distro_key}")
         return
 
     # Install the package using apt-get
     print(f"Installing '{package_name}' using apt-get...")
-    print(f"Ubuntu version: {detector.get_version_id()}")
+    print(f"{distro_name} version: {version_id}")
     print(f"Running: sudo apt-get update && sudo apt-get install -y {apt_get_name}")
     print()
 

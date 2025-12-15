@@ -103,11 +103,11 @@ class Blueprint:
         names = self.data.get('names', {})
         return names.get('brew')
 
-    def get_apt_get_name(self, ubuntu_key: str) -> Optional[str]:
-        """Get the apt-get package name from the blueprint for a specific Ubuntu version.
+    def get_apt_get_name(self, distro_key: str) -> Optional[str]:
+        """Get the apt-get package name from the blueprint for a specific distribution version.
 
         Args:
-            ubuntu_key: The Ubuntu version key (e.g., 'ubuntu22', 'ubuntu24')
+            distro_key: The distribution version key (e.g., 'ubuntu22', 'ubuntu24', 'debian12')
 
         Returns:
             The apt-get package name, or None if not specified
@@ -115,7 +115,7 @@ class Blueprint:
         names = self.data.get('names', {})
         apt_get_names = names.get('apt-get', {})
         if isinstance(apt_get_names, dict):
-            return apt_get_names.get(ubuntu_key)
+            return apt_get_names.get(distro_key)
         return None
 
     def get_dnf_name(self, amazonlinux_key: str) -> Optional[str]:

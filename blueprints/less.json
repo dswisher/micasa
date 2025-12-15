@@ -1,6 +1,12 @@
 {
     "names":
     {
+        "apt-get":
+        {
+            "debian12": "less",
+            "ubuntu22": "less",
+            "ubuntu24": "less"
+        },
         "dnf":
         {
             "amazonlinux2023": "less"

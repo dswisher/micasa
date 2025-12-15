@@ -59,6 +59,14 @@ class PlatformDetector:
         """
         return self.is_linux() and self._distribution_id == "amzn"
 
+    def is_debian(self) -> bool:
+        """Check if running on Debian.
+
+        Returns:
+            True if running on Debian
+        """
+        return self.is_linux() and self._distribution_id == "debian"
+
     def get_ubuntu_key(self) -> Optional[str]:
         """Get the Ubuntu version key for blueprint lookups.
 
@@ -83,6 +91,18 @@ class PlatformDetector:
 
         # Amazon Linux 2023 has VERSION_ID="2023"
         return f"amazonlinux{self._version_id}"
+
+    def get_debian_key(self) -> Optional[str]:
+        """Get the Debian version key for blueprint lookups.
+
+        Returns:
+            A key like 'debian12', or None if not Debian or version unknown
+        """
+        if not self.is_debian() or not self._version_id:
+            return None
+
+        # Debian 12 (Bookworm) has VERSION_ID="12"
+        return f"debian{self._version_id}"
 
     def get_os_type(self) -> str:
         """Get the operating system type.
