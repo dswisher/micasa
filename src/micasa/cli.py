@@ -1,6 +1,6 @@
 import argparse
 
-from micasa import status
+from micasa import install, status
 
 
 def main():
@@ -17,8 +17,8 @@ def main():
     status_parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
     # Add 'install' subcommand
-    install_parser = subparsers.add_parser('install', help='Install something')
-    install_parser.add_argument('package', nargs='?', help='Optional package name to install')
+    install_parser = subparsers.add_parser('install', help='Install a package')
+    install_parser.add_argument('package', help='Package name to install')
     install_parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
     args = parser.parse_args()
@@ -26,6 +26,6 @@ def main():
     if args.command == 'status':
         status.run(args)
     elif args.command == 'install':
-        print("Running install...")
+        install.run(args)
     else:
         parser.print_help()

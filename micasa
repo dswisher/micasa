@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+
+# Add src directory to path so we can import micasa
+script_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(script_dir, 'src')
+sys.path.insert(0, src_dir)
+
+from micasa.cli import main
+
+if __name__ == "__main__":
+    main()

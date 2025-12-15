@@ -94,6 +94,15 @@ class Blueprint:
         )
         return checker.get_version()
 
+    def get_brew_name(self) -> Optional[str]:
+        """Get the brew package name from the blueprint.
+
+        Returns:
+            The brew package name, or None if not specified
+        """
+        names = self.data.get('names', {})
+        return names.get('brew')
+
     def __str__(self):
         """Return string representation."""
         version = self.get_version()

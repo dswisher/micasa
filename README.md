@@ -32,14 +32,18 @@ More details about this, below.
 ## Installation
 
 There is no installation, per se.
-Rather, just clone this git repo, and run `./micasa.py` or `python3 micasa.py`, which should print out a brief help summary.
+Rather, just clone this git repo, and run `./micasa`, which should print out a brief help summary.
+
+Alternatively, you can run it as a Python module:
+
+    PYTHONPATH=src python3 -m micasa
 
 
 ## Status: Listing Missing/Out of Date Packages
 
 The status command, invoked as follows, lists any packages from the manifest that are missing or have available updates.
 
-    ./micasa.py status
+    ./micasa status
 
 
 ## Manifest

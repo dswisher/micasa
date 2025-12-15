@@ -1,0 +1,12 @@
+{
+    "names":
+    {
+        "brew": "blue-monkey"
+    },
+    "version_check":
+    {
+        "executable": "blue-monkey",
+        "arg": "--version",
+        "regex": "blue-monkey v([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}
