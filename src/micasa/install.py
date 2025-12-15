@@ -126,8 +126,12 @@ def _install_apt_get(package_name: str, blueprint: Blueprint, distro_key: Option
     # Get the apt-get package name from the blueprint
     apt_get_name = blueprint.get_apt_get_name(distro_key)
     if not apt_get_name:
-        print(f"Error: No apt-get package name specified in blueprint for '{package_name}'")
+        # No apt-get package available, try curl fallback
+        print(f"No apt-get package specified in blueprint for '{package_name}'")
         print(f"{distro_name} version: {distro_key}")
+        print("Falling back to curl installation method...")
+        print()
+        _install_with_curl(package_name, blueprint)
         return
 
     # Install the package using apt-get
@@ -187,8 +191,12 @@ def _install_amazonlinux(package_name: str, blueprint: Blueprint, detector: Plat
     # Get the dnf package name from the blueprint
     dnf_name = blueprint.get_dnf_name(amazonlinux_key)
     if not dnf_name:
-        print(f"Error: No dnf package name specified in blueprint for '{package_name}'")
+        # No dnf package available, try curl fallback
+        print(f"No dnf package specified in blueprint for '{package_name}'")
         print(f"Amazon Linux version: {amazonlinux_key}")
+        print("Falling back to curl installation method...")
+        print()
+        _install_with_curl(package_name, blueprint)
         return
 
     # Install the package using dnf
@@ -210,3 +218,47 @@ def _install_amazonlinux(package_name: str, blueprint: Blueprint, detector: Plat
         print()
         print(f"Error: Failed to install '{package_name}'")
         print(f"dnf exited with code {e.returncode}")
+
+
+def _install_with_curl(package_name: str, blueprint: Blueprint):
+    """Install a package using a curl command.
+
+    Args:
+        package_name: The name of the package to install
+        blueprint: The package blueprint
+
+    Returns:
+        None
+    """
+    # Check if curl is installed
+    curl_finder = ExecutableFinder("curl")
+    curl_path = curl_finder.find()
+    if not curl_path:
+        print("Error: 'curl' is not installed or not in PATH")
+        print("Please install curl first!")
+        return
+
+    # Get the curl command from the blueprint
+    curl_command = blueprint.get_curl_command()
+    if not curl_command:
+        print(f"Error: No installation method available for '{package_name}'")
+        return
+
+    # Install the package using curl
+    print(f"Installing '{package_name}' using curl...")
+    print(f"Running: {curl_command}")
+    print()
+
+    try:
+        subprocess.run(
+            curl_command,
+            shell=True,
+            check=True,
+            capture_output=False
+        )
+        print()
+        print(f"Successfully installed '{package_name}'")
+    except subprocess.CalledProcessError as e:
+        print()
+        print(f"Error: Failed to install '{package_name}'")
+        print(f"curl command exited with code {e.returncode}")

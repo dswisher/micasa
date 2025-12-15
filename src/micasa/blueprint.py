@@ -78,6 +78,8 @@ class Blueprint:
         Returns:
             The installed version string, or None if not found or unable to determine
         """
+        import os
+
         executable_name = self.get_executable_name()
         if not executable_name:
             return None
@@ -86,6 +88,13 @@ class Blueprint:
         executable_path = finder.find()
         if not executable_path:
             return None
+
+        # Warn if executable was found outside PATH
+        if finder.should_warn_about_path():
+            exec_dir = os.path.dirname(executable_path)
+            print(f"Warning: '{executable_name}' found at {executable_path}")
+            print(f"         but is not in your PATH. Consider adding {exec_dir} to your PATH.")
+            print()
 
         checker = VersionChecker(
             executable_path,
@@ -132,6 +141,15 @@ class Blueprint:
         if isinstance(dnf_names, dict):
             return dnf_names.get(amazonlinux_key)
         return None
+
+    def get_curl_command(self) -> Optional[str]:
+        """Get the curl installation command from the blueprint.
+
+        Returns:
+            The curl command string, or None if not specified
+        """
+        names = self.data.get('names', {})
+        return names.get('curl')
 
     def __str__(self):
         """Return string representation."""

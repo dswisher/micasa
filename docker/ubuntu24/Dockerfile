@@ -17,4 +17,7 @@ RUN useradd -m -s /bin/bash micasa && \
 USER micasa
 WORKDIR /home/micasa
 
+# Create .config directory so Docker doesn't create it as root when mounting the manifest
+RUN mkdir -p /home/micasa/.config
+
 CMD ["/bin/bash"]

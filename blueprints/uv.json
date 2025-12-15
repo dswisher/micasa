@@ -1,7 +1,8 @@
 {
     "names":
     {
-        "brew": "uv"
+        "brew": "uv",
+        "curl": "curl -LsSf https://astral.sh/uv/install.sh | sh"
     },
     "version_check":
     {
