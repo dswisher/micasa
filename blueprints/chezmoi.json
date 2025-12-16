@@ -1,5 +1,5 @@
 {
-    "names":
+    "package_names":
     {
         "brew": "chezmoi",
         "curl": "curl -LsSf https://get.chezmoi.io/lb | sh"

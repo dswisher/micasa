@@ -184,7 +184,7 @@ class Blueprint:
         Returns:
             The brew package name, or None if not specified
         """
-        names = self.data.get('names', {})
+        names = self.data.get('package_names', {})
         return names.get('brew')
 
     def get_apt_get_name(self, distro_key: str) -> Optional[str]:
@@ -196,7 +196,7 @@ class Blueprint:
         Returns:
             The apt-get package name, or None if not specified
         """
-        names = self.data.get('names', {})
+        names = self.data.get('package_names', {})
         apt_get_names = names.get('apt-get', {})
         if isinstance(apt_get_names, dict):
             return apt_get_names.get(distro_key)
@@ -211,7 +211,7 @@ class Blueprint:
         Returns:
             The dnf package name, or None if not specified
         """
-        names = self.data.get('names', {})
+        names = self.data.get('package_names', {})
         dnf_names = names.get('dnf', {})
         if isinstance(dnf_names, dict):
             return dnf_names.get(amazonlinux_key)
@@ -223,7 +223,7 @@ class Blueprint:
         Returns:
             The curl command string, or None if not specified
         """
-        names = self.data.get('names', {})
+        names = self.data.get('package_names', {})
         return names.get('curl')
 
     def __str__(self):

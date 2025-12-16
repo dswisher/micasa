@@ -1,5 +1,5 @@
 {
-    "names":
+    "package_names":
     {
         "brew": "uv",
         "curl": "curl -LsSf https://astral.sh/uv/install.sh | sh"
