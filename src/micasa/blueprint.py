@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 from micasa.executable_finder import ExecutableFinder
+from micasa.platform_detector import PlatformDetector
 from micasa.version_checker import VersionChecker
 
 
@@ -48,11 +49,48 @@ class Blueprint:
     def get_executable_name(self) -> Optional[str]:
         """Get the name of the executable binary.
 
+        Supports both simple string format and platform-specific object format.
+        For platform-specific format, looks up the executable name for the current
+        platform and falls back to 'default' if not found.
+
         Returns:
             The executable name, or None if not specified
         """
         version_check = self.data.get('version_check', {})
-        return version_check.get('executable')
+        executable = version_check.get('executable')
+
+        if executable is None:
+            return None
+
+        # If it's a string, return it directly (simple format)
+        if isinstance(executable, str):
+            return executable
+
+        # If it's a dict, resolve the platform-specific name (object format)
+        if isinstance(executable, dict):
+            detector = PlatformDetector()
+
+            # Try platform-specific keys in order of specificity
+            if detector.is_macos():
+                if 'macos' in executable:
+                    return executable['macos']
+            elif detector.is_ubuntu():
+                ubuntu_key = detector.get_ubuntu_key()
+                if ubuntu_key and ubuntu_key in executable:
+                    return executable[ubuntu_key]
+            elif detector.is_debian():
+                debian_key = detector.get_debian_key()
+                if debian_key and debian_key in executable:
+                    return executable[debian_key]
+            elif detector.is_amazonlinux():
+                amazonlinux_key = detector.get_amazonlinux_key()
+                if amazonlinux_key and amazonlinux_key in executable:
+                    return executable[amazonlinux_key]
+
+            # Fall back to 'default' if no platform-specific key matched
+            return executable.get('default')
+
+        return None
 
     def get_version_arg(self) -> str:
         """Get the argument to pass to the executable to get its version.
@@ -66,11 +104,48 @@ class Blueprint:
     def get_version_regex(self) -> Optional[str]:
         """Get the regex pattern to extract version from output.
 
+        Supports both simple string format and platform-specific object format.
+        For platform-specific format, looks up the regex for the current
+        platform and falls back to 'default' if not found.
+
         Returns:
             The regex pattern, or None if not specified
         """
         version_check = self.data.get('version_check', {})
-        return version_check.get('regex')
+        regex = version_check.get('regex')
+
+        if regex is None:
+            return None
+
+        # If it's a string, return it directly (simple format)
+        if isinstance(regex, str):
+            return regex
+
+        # If it's a dict, resolve the platform-specific regex (object format)
+        if isinstance(regex, dict):
+            detector = PlatformDetector()
+
+            # Try platform-specific keys in order of specificity
+            if detector.is_macos():
+                if 'macos' in regex:
+                    return regex['macos']
+            elif detector.is_ubuntu():
+                ubuntu_key = detector.get_ubuntu_key()
+                if ubuntu_key and ubuntu_key in regex:
+                    return regex[ubuntu_key]
+            elif detector.is_debian():
+                debian_key = detector.get_debian_key()
+                if debian_key and debian_key in regex:
+                    return regex[debian_key]
+            elif detector.is_amazonlinux():
+                amazonlinux_key = detector.get_amazonlinux_key()
+                if amazonlinux_key and amazonlinux_key in regex:
+                    return regex[amazonlinux_key]
+
+            # Fall back to 'default' if no platform-specific key matched
+            return regex.get('default')
+
+        return None
 
     def check_installed_version(self) -> Optional[str]:
         """Check the version of the installed executable.

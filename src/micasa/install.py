@@ -6,6 +6,9 @@ from micasa.executable_finder import ExecutableFinder
 from micasa.manifest import Manifest
 from micasa.platform_detector import PlatformDetector
 
+# Track whether apt-get update has been run in this session
+_apt_get_updated = False
+
 
 def run(args):
     """Run the install command."""
@@ -230,19 +233,28 @@ def _install_apt_get(package_name: str, blueprint: Blueprint, distro_key: Option
         return
 
     # Install the package using apt-get
+    global _apt_get_updated
+
     print(f"Installing '{package_name}' using apt-get...")
     print(f"{distro_name} version: {version_id}")
-    print(f"Running: sudo apt-get update && sudo apt-get install -y {apt_get_name}")
+
+    # Build the command based on whether we need to update
+    if _apt_get_updated:
+        print(f"Running: sudo apt-get install -y {apt_get_name}")
+    else:
+        print(f"Running: sudo apt-get update && sudo apt-get install -y {apt_get_name}")
     print()
 
     try:
-        # Update package lists first
-        subprocess.run(
-            ["sudo", "apt-get", "update"],
-            check=True,
-            capture_output=False
-        )
-        print()
+        # Update package lists first (only if not already done)
+        if not _apt_get_updated:
+            subprocess.run(
+                ["sudo", "apt-get", "update"],
+                check=True,
+                capture_output=False
+            )
+            _apt_get_updated = True
+            print()
 
         # Install the package
         subprocess.run(
