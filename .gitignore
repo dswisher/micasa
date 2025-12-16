@@ -15,3 +15,6 @@ docker/.ubuntu22
 docker/.amazonlinux2023
 docker/.debian12
 docker/.fedora
+
+# Docker build temp files (Zscaler certs and setup scripts)
+docker/*/tmp/

@@ -4,6 +4,10 @@ FROM amazonlinux:2023
 # Install sudo and shadow-utils (provides useradd) for testing
 RUN dnf install -y sudo shadow-utils
 
+# Conditionally set up Zscaler certificate if present
+COPY tmp/setup-zscaler.sh tmp/ZscalerRootCombined.pem /tmp/
+RUN chmod +x /tmp/setup-zscaler.sh && /tmp/setup-zscaler.sh
+
 # Create micasa user with sudo privileges
 RUN useradd -m -s /bin/bash micasa && \
     echo "micasa ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
