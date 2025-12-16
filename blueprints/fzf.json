@@ -1,0 +1,15 @@
+{
+    "names":
+    {
+        "apt-get":
+        {
+            "ubuntu24": "fzf"
+        }
+    },
+    "version_check":
+    {
+        "executable": "fzf",
+        "arg": "--version",
+        "regex": "([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}

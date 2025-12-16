@@ -1,0 +1,15 @@
+{
+    "names":
+    {
+        "apt-get":
+        {
+            "ubuntu24": "tig"
+        }
+    },
+    "version_check":
+    {
+        "executable": "tig",
+        "arg": "--version",
+        "regex": "tig version ([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}

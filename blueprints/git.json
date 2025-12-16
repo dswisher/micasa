@@ -1,0 +1,15 @@
+{
+    "names":
+    {
+        "apt-get":
+        {
+            "ubuntu24": "git"
+        }
+    },
+    "version_check":
+    {
+        "executable": "git",
+        "arg": "--version",
+        "regex": "git version ([0-9]+\\.[0-9]+\\.[0-9]+)"
+    }
+}
