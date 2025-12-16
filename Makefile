@@ -28,7 +28,7 @@ lint:
 	@echo "--------- PYDOCLINT ----------"
 	@uv run pydoclint --quiet .; status=$$?; if [ $$status -eq 0 ]; then echo "No violations"; fi; exit $$status
 
-docker-images: docker/.ubuntu24 docker/.ubuntu22 docker/.amazonlinux2023 docker/.debian12
+docker-images: docker/.ubuntu24 docker/.ubuntu22 docker/.amazon23 docker/.debian12
 
 
 docker-list:
@@ -37,8 +37,8 @@ docker-list:
 
 
 clean:
-	rm -f docker/.ubuntu24 docker/.ubuntu22 docker/.amazonlinux2023 docker/.debian12
-	rm -rf docker/ubuntu24/tmp docker/ubuntu22/tmp docker/amazonlinux2023/tmp docker/debian12/tmp
+	rm -f docker/.ubuntu24 docker/.ubuntu22 docker/.amazon23 docker/.debian12
+	rm -rf docker/ubuntu24/tmp docker/ubuntu22/tmp docker/amazon23/tmp docker/debian12/tmp
 
 
 # - - - - - - - INTERNAL FILE TARGETS - - - - - - - -
@@ -53,10 +53,10 @@ docker/.ubuntu22: docker/ubuntu22/Dockerfile
 	docker build -t micasa-test-ubuntu22 docker/ubuntu22
 	@touch docker/.ubuntu22
 
-docker/.amazonlinux2023: docker/amazonlinux2023/Dockerfile
-	$(call prepare-zscaler-cert,docker/amazonlinux2023)
-	docker build -t micasa-test-amazonlinux2023 docker/amazonlinux2023
-	@touch docker/.amazonlinux2023
+docker/.amazon23: docker/amazon23/Dockerfile
+	$(call prepare-zscaler-cert,docker/amazon23)
+	docker build -t micasa-test-amazon23 docker/amazon23
+	@touch docker/.amazon23
 
 docker/.debian12: docker/debian12/Dockerfile
 	$(call prepare-zscaler-cert,docker/debian12)

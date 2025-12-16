@@ -9,7 +9,7 @@
         },
         "dnf":
         {
-            "amazonlinux2023": "less"
+            "amazon23": "less"
         }
     },
     "version_check":

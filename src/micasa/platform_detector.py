@@ -84,13 +84,13 @@ class PlatformDetector:
         """Get the Amazon Linux version key for blueprint lookups.
 
         Returns:
-            A key like 'amazonlinux2023', or None if not Amazon Linux or version unknown
+            A key like 'amazon23', or None if not Amazon Linux or version unknown
         """
         if not self.is_amazonlinux() or not self._version_id:
             return None
 
         # Amazon Linux 2023 has VERSION_ID="2023"
-        return f"amazonlinux{self._version_id}"
+        return f"amazon{self._version_id}"
 
     def get_debian_key(self) -> Optional[str]:
         """Get the Debian version key for blueprint lookups.
