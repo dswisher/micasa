@@ -10,7 +10,7 @@ lint:
 	@uv run pydoclint --quiet .; status=$$?; if [ $$status -eq 0 ]; then echo "No violations"; fi; exit $$status
 
 # Docker test images
-docker-images: docker/.ubuntu24 docker/.ubuntu22 docker/.amazonlinux2023 docker/.debian12 docker/.fedora
+docker-images: docker/.ubuntu24 docker/.ubuntu22 docker/.amazonlinux2023 docker/.debian12
 
 docker/.ubuntu24: docker/ubuntu24/Dockerfile
 	docker build -t micasa-test-ubuntu24 docker/ubuntu24
@@ -28,14 +28,10 @@ docker/.debian12: docker/debian12/Dockerfile
 	docker build -t micasa-test-debian12 docker/debian12
 	@touch docker/.debian12
 
-docker/.fedora: docker/fedora-latest/Dockerfile
-	docker build -t micasa-test-fedora docker/fedora-latest
-	@touch docker/.fedora
-
 docker-list:
 	@echo "Available micasa test images:"
 	@docker images --filter "reference=micasa-test-*" --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
 
 clean:
-	rm -f docker/.ubuntu24 docker/.ubuntu22 docker/.amazonlinux2023 docker/.debian12 docker/.fedora
+	rm -f docker/.ubuntu24 docker/.ubuntu22 docker/.amazonlinux2023 docker/.debian12
 

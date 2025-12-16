@@ -31,7 +31,6 @@ After building, use the test script:
 ./scripts/docker-shell.sh ubuntu24
 ./scripts/docker-shell.sh amazonlinux2023
 ./scripts/docker-shell.sh debian12
-./scripts/docker-shell.sh fedora
 ```
 
 ## How It Works

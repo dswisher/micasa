@@ -19,7 +19,6 @@ if [ $# -eq 0 ]; then
     echo "    $0 amazonlinux2023"
     echo "    $0 ubuntu24"
     echo "    $0 debian12"
-    echo "    $0 fedora"
     echo ""
     echo "To see a list of available images, do:"
     echo "    make docker-list"
