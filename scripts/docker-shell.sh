@@ -42,7 +42,7 @@ else
 fi
 
 echo "Starting container from image: $IMAGE_NAME"
-echo "Mounting: $PROJECT_ROOT -> /workspace"
+echo "Mounting: $PROJECT_ROOT -> /workspace (read-only)"
 echo "Mounting manifest: $MANIFEST_STATUS"
 echo ""
 
@@ -50,7 +50,7 @@ docker run \
     --interactive \
     --tty \
     --rm \
-    --volume "$PROJECT_ROOT:/workspace" \
+    --volume "$PROJECT_ROOT:/workspace:ro" \
     $MANIFEST_VOLUME \
     --workdir /workspace \
     "$IMAGE_NAME" \

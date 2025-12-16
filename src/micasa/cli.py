@@ -17,8 +17,8 @@ def main():
     status_parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
     # Add 'install' subcommand
-    install_parser = subparsers.add_parser('install', help='Install a package')
-    install_parser.add_argument('package', help='Package name to install')
+    install_parser = subparsers.add_parser('install', help='Install packages')
+    install_parser.add_argument('package', nargs='?', help='Optional package name to install (installs all if not specified)')
     install_parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
     args = parser.parse_args()

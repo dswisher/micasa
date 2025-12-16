@@ -1,7 +1,8 @@
 {
     "names":
     {
-        "brew": "chezmoi"
+        "brew": "chezmoi",
+        "curl": "curl -LsSf https://get.chezmoi.io/lb | sh"
     },
     "version_check":
     {

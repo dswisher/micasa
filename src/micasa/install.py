@@ -9,44 +9,139 @@ from micasa.platform_detector import PlatformDetector
 
 def run(args):
     """Run the install command."""
+    if args.package:
+        # Install a specific package
+        _install_single_package(args.package)
+    else:
+        # Install all packages
+        _install_all_packages()
+
+
+def _install_single_package(package_name: str):
+    """Install a single package.
+
+    Args:
+        package_name: The name of the package to install
+
+    Returns:
+        None
+    """
     manifest = Manifest.load()
 
     # Find the package in the manifest
     package = None
     for p in manifest.packages:
-        if p.name == args.package:
+        if p.name == package_name:
             package = p
             break
 
     if not package:
-        print(f"Error: Package '{args.package}' not found in manifest")
+        print(f"Error: Package '{package_name}' not found in manifest")
         return
 
     # Load the blueprint
-    blueprint = Blueprint.load(args.package)
+    blueprint = Blueprint.load(package_name)
     if not blueprint:
-        print(f"Error: No blueprint found for package '{args.package}'")
+        print(f"Error: No blueprint found for package '{package_name}'")
         return
 
     # Check if the package is already installed
     installed_version = blueprint.check_installed_version()
     if installed_version:
-        print(f"Package '{args.package}' is already installed (version {installed_version})")
+        print(f"Package '{package_name}' is already installed (version {installed_version})")
         return
 
+    # Install the package
+    _install_package_with_platform_detection(package_name, blueprint)
+
+
+def _install_all_packages():
+    """Install all packages from the manifest that are not yet installed.
+
+    Returns:
+        None
+    """
+    manifest = Manifest.load()
+
+    print("Installing all packages from manifest...")
+    print()
+
+    # Identify packages that need to be installed
+    packages_to_install = []
+    for package in manifest.packages:
+        blueprint = Blueprint.load(package.name)
+        if not blueprint:
+            print(f"Warning: No blueprint found for package '{package.name}', skipping")
+            continue
+
+        installed_version = blueprint.check_installed_version()
+        if installed_version:
+            print(f"Package '{package.name}' is already installed (version {installed_version}), skipping")
+        else:
+            packages_to_install.append(package.name)
+
+    if not packages_to_install:
+        print()
+        print("All packages are already installed")
+        return
+
+    print()
+    print(f"Found {len(packages_to_install)} package(s) to install: {', '.join(packages_to_install)}")
+    print()
+
+    # Check if curl is needed and not installed
+    curl_needed = False
+    curl_finder = ExecutableFinder("curl")
+    curl_installed = curl_finder.find() is not None
+
+    for package_name in packages_to_install:
+        blueprint = Blueprint.load(package_name)
+        if blueprint and blueprint.get_curl_command():
+            curl_needed = True
+            break
+
+    # If curl is needed but not installed, try to install it first
+    if curl_needed and not curl_installed:
+        if "curl" in packages_to_install:
+            print("Installing curl first (required for other installations)...")
+            print()
+            _install_single_package("curl")
+            packages_to_install.remove("curl")
+            print()
+        else:
+            print("Warning: Some packages require curl, but curl is not in the manifest")
+            print("         Installation of those packages may fail")
+            print()
+
+    # Install remaining packages
+    for package_name in packages_to_install:
+        print(f"Installing '{package_name}'...")
+        _install_single_package(package_name)
+        print()
+
+    print("Installation complete")
+
+
+def _install_package_with_platform_detection(package_name: str, blueprint: Blueprint):
+    """Install a package with platform detection.
+
+    Args:
+        package_name: The name of the package to install
+        blueprint: The package blueprint
+    """
     # Detect the platform
     detector = PlatformDetector()
 
     if detector.is_macos():
-        _install_macos(args.package, blueprint)
+        _install_macos(package_name, blueprint)
     elif detector.is_ubuntu():
         distro_key = detector.get_ubuntu_key()
-        _install_apt_get(args.package, blueprint, distro_key, "Ubuntu", detector.get_version_id())
+        _install_apt_get(package_name, blueprint, distro_key, "Ubuntu", detector.get_version_id())
     elif detector.is_debian():
         distro_key = detector.get_debian_key()
-        _install_apt_get(args.package, blueprint, distro_key, "Debian", detector.get_version_id())
+        _install_apt_get(package_name, blueprint, distro_key, "Debian", detector.get_version_id())
     elif detector.is_amazonlinux():
-        _install_amazonlinux(args.package, blueprint, detector)
+        _install_amazonlinux(package_name, blueprint, detector)
     else:
         print("Error: Installation is not supported on this platform")
         print(f"Detected OS: {detector.get_os_type()}")
@@ -230,6 +325,8 @@ def _install_with_curl(package_name: str, blueprint: Blueprint):
     Returns:
         None
     """
+    import os
+
     # Check if curl is installed
     curl_finder = ExecutableFinder("curl")
     curl_path = curl_finder.find()
@@ -244,9 +341,12 @@ def _install_with_curl(package_name: str, blueprint: Blueprint):
         print(f"Error: No installation method available for '{package_name}'")
         return
 
-    # Install the package using curl
+    # Install the package using curl from the home directory
+    # (some install scripts use relative paths like bin or .local/bin)
+    home_dir = os.path.expanduser("~")
     print(f"Installing '{package_name}' using curl...")
     print(f"Running: {curl_command}")
+    print(f"Working directory: {home_dir}")
     print()
 
     try:
@@ -254,7 +354,8 @@ def _install_with_curl(package_name: str, blueprint: Blueprint):
             curl_command,
             shell=True,
             check=True,
-            capture_output=False
+            capture_output=False,
+            cwd=home_dir
         )
         print()
         print(f"Successfully installed '{package_name}'")
