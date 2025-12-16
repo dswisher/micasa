@@ -29,18 +29,21 @@ def _install_single_package(package_name: str):
     Returns:
         None
     """
-    manifest = Manifest.load()
+    # Try to load manifest, but allow installation even if it doesn't exist
+    manifest = Manifest.load(required=False)
 
-    # Find the package in the manifest
-    package = None
-    for p in manifest.packages:
-        if p.name == package_name:
-            package = p
-            break
+    # Check if package is in the manifest (informational only)
+    if manifest:
+        package = None
+        for p in manifest.packages:
+            if p.name == package_name:
+                package = p
+                break
 
-    if not package:
-        print(f"Error: Package '{package_name}' not found in manifest")
-        return
+        if not package:
+            print(f"Note: Package '{package_name}' not found in manifest, proceeding with installation")
+    else:
+        print("Note: Manifest not found, proceeding with package installation")
 
     # Load the blueprint
     blueprint = Blueprint.load(package_name)

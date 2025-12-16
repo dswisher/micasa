@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Literal, Optional, overload
 
 
 class Package:
@@ -21,18 +21,27 @@ class Manifest:
         self.packages: list[Package] = []
         self.raw_content = ""
 
+    @overload
     @classmethod
-    def load(cls, path: Optional[str] = None) -> "Manifest":
+    def load(cls, path: Optional[str] = None, required: Literal[True] = True) -> "Manifest": ...
+
+    @overload
+    @classmethod
+    def load(cls, path: Optional[str] = None, *, required: Literal[False]) -> Optional["Manifest"]: ...
+
+    @classmethod
+    def load(cls, path: Optional[str] = None, required: bool = True) -> Optional["Manifest"]:
         """Load manifest from file.
 
         Args:
             path: Path to manifest file. Defaults to ~/.config/micasa/micasa.txt
+            required: If True, exit on missing file. If False, return None on missing file.
 
         Returns:
-            the loaded manifest.
+            the loaded manifest, or None if file doesn't exist and required=False.
 
         Raises:
-            SystemExit: If the manifest file does not exist.
+            SystemExit: If the manifest file does not exist and required=True.
         """
         if path is None:
             path = os.path.expanduser("~/.config/micasa/micasa.txt")
@@ -43,11 +52,14 @@ class Manifest:
             with open(path, 'r') as f:
                 manifest.raw_content = f.read()
         except FileNotFoundError:
-            print(f"Error: Manifest file not found at: {path}")
-            print()
-            print("Please create a manifest file at the default location or specify a path.")
-            print("See the documentation for manifest file format.")
-            raise SystemExit(1)
+            if required:
+                print(f"Error: Manifest file not found at: {path}")
+                print()
+                print("Please create a manifest file at the default location or specify a path.")
+                print("See the documentation for manifest file format.")
+                raise SystemExit(1)
+            else:
+                return None
 
         # Parse the manifest content
         for line in manifest.raw_content.splitlines():
