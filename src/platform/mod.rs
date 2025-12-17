@@ -1,4 +1,4 @@
-use crate::package_manager::{brew::BrewWrapper, PackageManager};
+use crate::package_manager::{apt::AptWrapper, brew::BrewWrapper, PackageManager};
 
 /// Represents the operating system type
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -35,8 +35,7 @@ pub fn get_available_managers() -> Vec<Box<dyn PackageManager>> {
             vec![Box::new(BrewWrapper::new())]
         }
         OsType::Linux => {
-            // Future: will return apt, yum, etc.
-            vec![]
+            vec![Box::new(AptWrapper::new())]
         }
         OsType::Windows => {
             // Future: will return winget, scoop, chocolatey
