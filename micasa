@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Simple wrapper script to run the micasa binary from target/debug
+
+BINARY="./target/debug/micasa"
+
+if [ ! -f "$BINARY" ]; then
+    echo "Binary not found. Building..."
+    cargo build || exit 1
+fi
+
+exec "$BINARY" "$@"
