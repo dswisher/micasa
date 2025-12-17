@@ -1,1 +1,10 @@
+
+# rust build output
 /target
+
+# Docker build temp files (Zscaler certs and setup scripts)
+docker/*/*/tmp/
+
+docker/.builder-ubuntu24
+docker/.runner-ubuntu24
+
