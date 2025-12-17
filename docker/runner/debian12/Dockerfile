@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM debian:bookworm
 
 # Keep image clean - only install minimal tools for interactive testing
 # NOTE: Intentionally NOT installing curl or other tools by default

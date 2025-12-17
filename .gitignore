@@ -5,6 +5,12 @@
 # Docker build temp files (Zscaler certs and setup scripts)
 docker/*/*/tmp/
 
+docker/.builder-amazon23
+docker/.builder-debian12
+docker/.builder-ubuntu22
 docker/.builder-ubuntu24
+docker/.runner-amazon23
+docker/.runner-debian12
+docker/.runner-ubuntu22
 docker/.runner-ubuntu24
 

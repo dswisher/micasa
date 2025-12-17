@@ -40,8 +40,20 @@ if [ ! -f "$BINARY_PATH" ]; then
     exit 1
 fi
 
+# Check if the manifest file exists
+MANIFEST_PATH="$HOME/.config/micasa/micasa.txt"
+MANIFEST_VOLUME=""
+
+if [ -f "$MANIFEST_PATH" ]; then
+    MANIFEST_VOLUME="--volume $MANIFEST_PATH:/home/micasa/.config/micasa/micasa.txt:ro"
+    MANIFEST_STATUS="yes (read-only)"
+else
+    MANIFEST_STATUS="no (file not found at $MANIFEST_PATH)"
+fi
+
 echo "Starting runner container: $RUNNER_IMAGE"
 echo "Mounting: $BINARY_PATH -> /usr/local/bin/micasa (read-only)"
+echo "Mounting manifest: $MANIFEST_STATUS"
 echo ""
 
 docker run \
@@ -49,5 +61,6 @@ docker run \
     --tty \
     --rm \
     --volume "$BINARY_PATH:/usr/local/bin/micasa:ro" \
+    $MANIFEST_VOLUME \
     "$RUNNER_IMAGE" \
     /bin/bash
