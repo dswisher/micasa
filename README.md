@@ -23,6 +23,11 @@ There are other (almost certainly better) tools to do this, but I haven't found 
 2. Works on Windows, MacOS, and Linux.
 
 
+## Roadmap
+
+* Support for `snap`. This does not work in `docker`, so I have no way (at the moment) to test.
+
+
 ## Requirements
 
 TBD
@@ -58,10 +63,18 @@ In other words, this is a valid entry:
 
     eza
 
-## Blueprints
+The file is typically found at `~/.config/micasa/micasa.txt`, but that may be changed by setting the `XDG_CONFIG_HOME` environment variable.
 
-Each package in the manifest needs to have a blueprint file in the tool.
-The blueprint specifies things like how to check the version, where package sources are located, and how to install them.
+
+## Aliases
+
+Some packages are known by different names by different package managers, or have various "flavors".
+
+For example, on Ubuntu 24.04 with `apt-get`, the `fd` package is known as `fd-find`.
+As another example, on Amazon Linux 2023 with `dnf`, the `curl` package could be installed from `curl` or `curl-minimal`.
+
+To cope with this, the code for each package manager has a small list of aliases for packages.
+Basically, alternate names that need to be checked/used.
 
 
 ## Development

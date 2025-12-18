@@ -13,12 +13,23 @@ impl AptWrapper {
 
     /// Helper to detect if sudo is available
     fn needs_sudo(&self) -> bool {
-        // Check if sudo command is available
-        Command::new("which")
-            .arg("sudo")
+        // Check if sudo command is available by trying to run it
+        Command::new("sudo")
+            .arg("--version")
             .output()
             .map(|output| output.status.success())
             .unwrap_or(false)
+    }
+
+    /// Resolve a package name to possible candidates on this platform
+    /// Returns a vector with the canonical name first, then aliases
+    /// This handles cases where package names differ across platforms
+    fn resolve_package_candidates(&self, name: &str) -> Vec<String> {
+        match name {
+            "fd" => vec!["fd-find".to_string()],
+            // Add more as needed
+            _ => vec![name.to_string()],
+        }
     }
 
     /// Helper to execute apt-get commands
@@ -152,17 +163,35 @@ impl PackageManager for AptWrapper {
             ));
         }
 
+        // Check if any candidate is already installed
+        let candidates = self.resolve_package_candidates(package_name);
+        for candidate in &candidates {
+            if let Ok(policy_output) = self.execute_apt_cache(&["policy", candidate]) {
+                let (installed_version, _) = self.parse_policy_output(&policy_output);
+                if let Some(version) = installed_version {
+                    println!(
+                        "{} is already installed (as {}, version {})",
+                        package_name, candidate, version
+                    );
+                    return Ok(());
+                }
+            }
+        }
+
         println!("Installing {} via apt...", package_name);
 
+        // Install using the first candidate (canonical name)
+        let install_target = &candidates[0];
+
         // Try without sudo first
-        let result = self.execute_apt_get(&["install", "-y", package_name], false);
+        let result = self.execute_apt_get(&["install", "-y", install_target], false);
 
         // If permission error and sudo is available, retry with sudo
         if let Err(MicasaError::CommandFailed { ref stderr, .. }) = result {
             if stderr.contains("permission") || stderr.contains("not permitted") || stderr.contains("lock file") {
                 if self.needs_sudo() {
                     println!("Retrying with sudo...");
-                    self.execute_apt_get(&["install", "-y", package_name], true)?;
+                    self.execute_apt_get(&["install", "-y", install_target], true)?;
                     println!("Successfully installed {}", package_name);
                     return Ok(());
                 }
@@ -181,17 +210,46 @@ impl PackageManager for AptWrapper {
             ));
         }
 
-        println!("Uninstalling {} via apt...", package_name);
+        // Find which candidate is actually installed
+        let candidates = self.resolve_package_candidates(package_name);
+        let mut installed_candidate = None;
+
+        for candidate in &candidates {
+            if let Ok(policy_output) = self.execute_apt_cache(&["policy", candidate]) {
+                let (installed_version, _) = self.parse_policy_output(&policy_output);
+                if installed_version.is_some() {
+                    installed_candidate = Some(candidate.clone());
+                    break;
+                }
+            }
+        }
+
+        let uninstall_target = match installed_candidate {
+            Some(candidate) => {
+                if &candidate != package_name {
+                    println!("Uninstalling {} (installed as {}) via apt...", package_name, candidate);
+                } else {
+                    println!("Uninstalling {} via apt...", package_name);
+                }
+                candidate
+            }
+            None => {
+                return Err(MicasaError::CommandExecutionFailed(format!(
+                    "Package {} is not installed",
+                    package_name
+                )));
+            }
+        };
 
         // Try without sudo first
-        let result = self.execute_apt_get(&["remove", "-y", package_name], false);
+        let result = self.execute_apt_get(&["remove", "-y", &uninstall_target], false);
 
         // If permission error and sudo is available, retry with sudo
         if let Err(MicasaError::CommandFailed { ref stderr, .. }) = result {
             if stderr.contains("permission") || stderr.contains("not permitted") || stderr.contains("lock file") {
                 if self.needs_sudo() {
                     println!("Retrying with sudo...");
-                    self.execute_apt_get(&["remove", "-y", package_name], true)?;
+                    self.execute_apt_get(&["remove", "-y", &uninstall_target], true)?;
                     println!("Successfully uninstalled {}", package_name);
                     return Ok(());
                 }
@@ -210,21 +268,67 @@ impl PackageManager for AptWrapper {
             ));
         }
 
-        // Get version information
-        let policy_output = self.execute_apt_cache(&["policy", package_name])?;
-        let (installed_version, available_version) = self.parse_policy_output(&policy_output);
+        // Try each candidate package name
+        // First pass: look for installed packages (highest priority)
+        // Second pass: look for available packages
+        let candidates = self.resolve_package_candidates(package_name);
+        let mut first_error = None;
+        let mut available_info = None;
 
-        // Get description
-        let show_output = self.execute_apt_cache(&["show", package_name])?;
-        let description = self.parse_show_output(&show_output);
+        for candidate in &candidates {
+            match self.execute_apt_cache(&["policy", candidate]) {
+                Ok(policy_output) => {
+                    let (installed_version, available_version) =
+                        self.parse_policy_output(&policy_output);
 
-        Ok(PackageInfo {
-            name: package_name.to_string(),
-            installed_version,
-            available_version,
-            description,
-            source: self.name().to_string(),
-        })
+                    // Get description
+                    let description = self
+                        .execute_apt_cache(&["show", candidate])
+                        .ok()
+                        .and_then(|show_output| self.parse_show_output(&show_output));
+
+                    // If installed, return immediately (highest priority)
+                    if installed_version.is_some() {
+                        return Ok(PackageInfo {
+                            name: package_name.to_string(), // Use canonical name
+                            installed_version,
+                            available_version,
+                            description,
+                            source: self.name().to_string(),
+                        });
+                    }
+
+                    // Save available info as fallback
+                    if available_version.is_some() && available_info.is_none() {
+                        available_info = Some(PackageInfo {
+                            name: package_name.to_string(),
+                            installed_version: None,
+                            available_version,
+                            description,
+                            source: self.name().to_string(),
+                        });
+                    }
+                }
+                Err(e) => {
+                    if first_error.is_none() {
+                        first_error = Some(e);
+                    }
+                }
+            }
+        }
+
+        // Return available info if we found any
+        if let Some(info) = available_info {
+            return Ok(info);
+        }
+
+        // If no candidate worked, return the first error
+        Err(first_error.unwrap_or_else(|| {
+            MicasaError::CommandExecutionFailed(format!(
+                "No information found for package: {}",
+                package_name
+            ))
+        }))
     }
 }
 

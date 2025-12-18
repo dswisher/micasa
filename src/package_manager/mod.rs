@@ -63,3 +63,4 @@ pub trait PackageManager {
 // Re-export wrapper implementations
 pub mod brew;
 pub mod apt;
+pub mod dnf;
