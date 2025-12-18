@@ -6,6 +6,7 @@ use crate::version;
 
 /// Executes the install command for a single package
 /// Tries each available package manager until one succeeds
+/// If a manifest exists with version constraints for this package, they will be enforced
 pub fn execute_single(package_name: &str) -> Result<()> {
     let managers = platform::get_available_managers();
 
@@ -13,34 +14,33 @@ pub fn execute_single(package_name: &str) -> Result<()> {
         return Err(MicasaError::NoPackageManagers);
     }
 
-    // Try each manager until one succeeds
-    let mut last_error = None;
+    // Try to read manifest to get version constraints (ignore error if manifest doesn't exist)
+    let version_spec = Manifest::read_default()
+        .ok()
+        .and_then(|manifest| {
+            manifest
+                .entries()
+                .iter()
+                .find(|entry| entry.name == package_name)
+                .map(|entry| entry.version_spec.clone())
+        })
+        .flatten();
 
-    for manager in &managers {
+    if let Some(ref spec) = version_spec {
         println!(
-            "Trying to install '{}' using {}...",
-            package_name,
-            manager.name()
+            "Found version constraint in manifest for '{}': {}",
+            package_name, spec
         );
-
-        match manager.install(package_name) {
-            Ok(()) => {
-                println!(
-                    "Successfully installed '{}' using {}",
-                    package_name,
-                    manager.name()
-                );
-                return Ok(());
-            }
-            Err(e) => {
-                eprintln!("Failed with {}: {}", manager.name(), e);
-                last_error = Some(e);
-            }
-        }
     }
 
-    // If we get here, all managers failed
-    Err(last_error.unwrap_or(MicasaError::NoPackageManagers))
+    // Create a manifest entry for version checking
+    let entry = ManifestEntry {
+        name: package_name.to_string(),
+        version_spec,
+    };
+
+    // Use the same logic as manifest installation for consistency
+    install_package_with_version(&managers, &entry)
 }
 
 /// Executes the install command for all packages in the manifest
@@ -71,7 +71,6 @@ pub fn execute_manifest() -> Result<()> {
         match install_package_with_version(&managers, entry) {
             Ok(()) => {
                 results.push((entry.name.clone(), true, None));
-                println!("  Successfully installed {}\n", entry.name);
             }
             Err(e) => {
                 results.push((entry.name.clone(), false, Some(e.to_string())));
@@ -133,7 +132,19 @@ fn install_package_with_version(
 
                     match manager.install(&entry.name) {
                         Ok(()) => {
-                            println!("  Successfully installed using {}", manager.name());
+                            // Get the installed version to report it
+                            let installed_version = manager
+                                .get_info(&entry.name)
+                                .ok()
+                                .and_then(|info| info.installed_version)
+                                .unwrap_or_else(|| "unknown".to_string());
+
+                            println!(
+                                "  Successfully installed '{}' version '{}' using {}",
+                                entry.name,
+                                installed_version,
+                                manager.name()
+                            );
                             return Ok(());
                         }
                         Err(e) => {
