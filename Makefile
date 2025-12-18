@@ -1,6 +1,6 @@
 MARKER_DIR = docker/.markers
 
-.PHONY: all docker-images docker-list clean help ubuntu24 ubuntu22 debian12 amazon23 builders runners
+.PHONY: all docker-images docker-list clean help lint ubuntu24 ubuntu22 debian12 amazon23 builders runners
 
 # Function to prepare Zscaler cert for docker build
 # Usage: $(call prepare-zscaler-cert,docker-dir)
@@ -26,7 +26,12 @@ help:
 	@echo "  ubuntu22       - Build micasa binary for Ubuntu 22.04"
 	@echo "  debian12       - Build micasa binary for Debian 12"
 	@echo "  amazon23       - Build micasa binary for Amazon Linux 2023"
+	@echo "  lint           - Run clippy linter on the code"
 	@echo "  clean          - Remove Docker build markers and build artifacts"
+
+lint:
+	@echo "Running clippy linter..."
+	@cargo clippy -- -D warnings
 
 docker-images: builders runners
 

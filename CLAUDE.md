@@ -10,5 +10,5 @@ It is a wrapper around the platform-specific package managers (`brew`, `apt`, `y
 
 Each package manager has a wrapper in `src/package_manager` that implements the `PackageManager` trait, defined in `src/package_manager/mod.rs`.
 
-The code should compile without any warnings.
+The code should compile without any warnings, and a `make lint` should not show any warnings.
 

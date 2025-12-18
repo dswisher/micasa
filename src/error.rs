@@ -1,4 +1,5 @@
 use std::io;
+use std::path::PathBuf;
 use std::process::ExitStatus;
 use thiserror::Error;
 
@@ -29,6 +30,21 @@ pub enum MicasaError {
 
     #[error("UTF-8 conversion error: {0}")]
     Utf8(#[from] std::string::FromUtf8Error),
+
+    #[error("Manifest file not found at {0}")]
+    ManifestNotFound(PathBuf),
+
+    #[error("Failed to parse manifest: {0}")]
+    ManifestParseError(String),
+
+    #[error("Invalid version specification '{0}': {1}")]
+    InvalidVersionSpec(String, String),
+
+    #[error("No package manager provides satisfactory version for '{0}'. Required: {1}")]
+    NoSatisfactoryVersion(String, String),
+
+    #[error("Package '{0}' not found in any available package manager")]
+    PackageNotFound(String),
 }
 
 /// Type alias for Result with our error type

@@ -188,13 +188,13 @@ impl PackageManager for AptWrapper {
 
         // If permission error and sudo is available, retry with sudo
         if let Err(MicasaError::CommandFailed { ref stderr, .. }) = result {
-            if stderr.contains("permission") || stderr.contains("not permitted") || stderr.contains("lock file") {
-                if self.needs_sudo() {
-                    println!("Retrying with sudo...");
-                    self.execute_apt_get(&["install", "-y", install_target], true)?;
-                    println!("Successfully installed {}", package_name);
-                    return Ok(());
-                }
+            if (stderr.contains("permission") || stderr.contains("not permitted") || stderr.contains("lock file"))
+                && self.needs_sudo()
+            {
+                println!("Retrying with sudo...");
+                self.execute_apt_get(&["install", "-y", install_target], true)?;
+                println!("Successfully installed {}", package_name);
+                return Ok(());
             }
         }
 
@@ -226,7 +226,7 @@ impl PackageManager for AptWrapper {
 
         let uninstall_target = match installed_candidate {
             Some(candidate) => {
-                if &candidate != package_name {
+                if candidate != package_name {
                     println!("Uninstalling {} (installed as {}) via apt...", package_name, candidate);
                 } else {
                     println!("Uninstalling {} via apt...", package_name);
@@ -246,13 +246,13 @@ impl PackageManager for AptWrapper {
 
         // If permission error and sudo is available, retry with sudo
         if let Err(MicasaError::CommandFailed { ref stderr, .. }) = result {
-            if stderr.contains("permission") || stderr.contains("not permitted") || stderr.contains("lock file") {
-                if self.needs_sudo() {
-                    println!("Retrying with sudo...");
-                    self.execute_apt_get(&["remove", "-y", &uninstall_target], true)?;
-                    println!("Successfully uninstalled {}", package_name);
-                    return Ok(());
-                }
+            if (stderr.contains("permission") || stderr.contains("not permitted") || stderr.contains("lock file"))
+                && self.needs_sudo()
+            {
+                println!("Retrying with sudo...");
+                self.execute_apt_get(&["remove", "-y", &uninstall_target], true)?;
+                println!("Successfully uninstalled {}", package_name);
+                return Ok(());
             }
         }
 

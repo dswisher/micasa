@@ -207,16 +207,16 @@ impl PackageManager for DnfWrapper {
 
         // If permission error and sudo is available, retry with sudo
         if let Err(MicasaError::CommandFailed { ref stderr, .. }) = result {
-            if stderr.contains("permission")
+            if (stderr.contains("permission")
                 || stderr.contains("not permitted")
                 || stderr.contains("Cannot open")
-                || stderr.contains("This command has to be run with superuser privileges") {
-                if self.needs_sudo() {
-                    println!("Retrying with sudo...");
-                    self.execute_dnf(&["install", "-y", install_target], true)?;
-                    println!("Successfully installed {}", package_name);
-                    return Ok(());
-                }
+                || stderr.contains("This command has to be run with superuser privileges"))
+                && self.needs_sudo()
+            {
+                println!("Retrying with sudo...");
+                self.execute_dnf(&["install", "-y", install_target], true)?;
+                println!("Successfully installed {}", package_name);
+                return Ok(());
             }
         }
 
@@ -248,7 +248,7 @@ impl PackageManager for DnfWrapper {
 
         let uninstall_target = match installed_candidate {
             Some(candidate) => {
-                if &candidate != package_name {
+                if candidate != package_name {
                     println!("Uninstalling {} (installed as {}) via dnf...", package_name, candidate);
                 } else {
                     println!("Uninstalling {} via dnf...", package_name);
@@ -268,16 +268,16 @@ impl PackageManager for DnfWrapper {
 
         // If permission error and sudo is available, retry with sudo
         if let Err(MicasaError::CommandFailed { ref stderr, .. }) = result {
-            if stderr.contains("permission")
+            if (stderr.contains("permission")
                 || stderr.contains("not permitted")
                 || stderr.contains("Cannot open")
-                || stderr.contains("This command has to be run with superuser privileges") {
-                if self.needs_sudo() {
-                    println!("Retrying with sudo...");
-                    self.execute_dnf(&["remove", "-y", &uninstall_target], true)?;
-                    println!("Successfully uninstalled {}", package_name);
-                    return Ok(());
-                }
+                || stderr.contains("This command has to be run with superuser privileges"))
+                && self.needs_sudo()
+            {
+                println!("Retrying with sudo...");
+                self.execute_dnf(&["remove", "-y", &uninstall_target], true)?;
+                println!("Successfully uninstalled {}", package_name);
+                return Ok(());
             }
         }
 

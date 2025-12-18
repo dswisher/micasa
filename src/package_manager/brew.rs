@@ -47,10 +47,8 @@ impl BrewWrapper {
     fn resolve_package_candidates(&self, name: &str) -> Vec<String> {
         // Homebrew typically doesn't have package name aliases,
         // but we include this method for consistency
-        match name {
-            // Add any brew-specific aliases here if needed
-            _ => vec![name.to_string()],
-        }
+        // Add any brew-specific aliases here if needed
+        vec![name.to_string()]
     }
 
     /// Helper to execute brew commands
@@ -156,7 +154,7 @@ impl PackageManager for BrewWrapper {
 
         let uninstall_target = match installed_candidate {
             Some(candidate) => {
-                if &candidate != package_name {
+                if candidate != package_name {
                     println!("Uninstalling {} (installed as {}) via brew...", package_name, candidate);
                 } else {
                     println!("Uninstalling {} via brew...", package_name);
