@@ -64,3 +64,4 @@ pub trait PackageManager {
 pub mod brew;
 pub mod apt;
 pub mod dnf;
+pub mod github;

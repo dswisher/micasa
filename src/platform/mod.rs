@@ -1,4 +1,4 @@
-use crate::package_manager::{apt::AptWrapper, brew::BrewWrapper, dnf::DnfWrapper, PackageManager};
+use crate::package_manager::{apt::AptWrapper, brew::BrewWrapper, dnf::DnfWrapper, github::GitHubWrapper, PackageManager};
 use std::fs;
 
 /// Represents the operating system type
@@ -52,11 +52,15 @@ pub fn get_available_managers() -> Vec<Box<dyn PackageManager>> {
     match os {
         OsType::MacOS => {
             // For now, only brew is implemented
-            vec![Box::new(BrewWrapper::new())]
+            // GitHub is fallback for packages not available in brew
+            vec![
+                Box::new(BrewWrapper::new()),
+                Box::new(GitHubWrapper::new()),
+            ]
         }
         OsType::Linux => {
             // Detect specific Linux distribution
-            match detect_linux_distro().as_deref() {
+            let mut managers: Vec<Box<dyn PackageManager>> = match detect_linux_distro().as_deref() {
                 // DNF-based distributions
                 Some("amzn") | Some("fedora") | Some("rhel") | Some("centos") | Some("rocky")
                 | Some("almalinux") => {
@@ -70,11 +74,16 @@ pub fn get_available_managers() -> Vec<Box<dyn PackageManager>> {
                 _ => {
                     vec![Box::new(AptWrapper::new()), Box::new(DnfWrapper::new())]
                 }
-            }
+            };
+
+            // Add GitHub as fallback for all Linux distributions
+            managers.push(Box::new(GitHubWrapper::new()));
+            managers
         }
         OsType::Windows => {
             // Future: will return winget, scoop, chocolatey
-            vec![]
+            // For now, just GitHub as fallback
+            vec![Box::new(GitHubWrapper::new())]
         }
     }
 }

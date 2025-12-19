@@ -2,6 +2,8 @@
 
 See README.md for details on the project.
 
+Packages should NEVER be installed by Claude on the local machine. Installing in the docker test container is acceptable.
+
 
 ## Code Structure Overview
 

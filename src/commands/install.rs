@@ -104,6 +104,11 @@ fn install_package_with_version(
     let mut found_in_any_manager = false;
 
     for manager in managers {
+        // Skip managers that aren't available on this system
+        if !manager.is_available() {
+            continue;
+        }
+
         println!("  Checking {}...", manager.name());
 
         // First, check if already installed with satisfactory version

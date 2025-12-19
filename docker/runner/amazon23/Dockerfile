@@ -12,7 +12,8 @@ RUN chmod +x /tmp/setup-zscaler.sh && /tmp/setup-zscaler.sh
 # to test that micasa can handle installing its prerequisites
 RUN dnf install -y \
     sudo \
-    shadow-utils
+    shadow-utils \
+    which
 
 # Create micasa user with sudo privileges
 RUN useradd -m -s /bin/bash micasa && \
