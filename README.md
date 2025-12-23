@@ -23,6 +23,11 @@ There are other (almost certainly better) tools to do this, but I haven't found 
 2. Works on Windows, MacOS, and Linux.
 
 
+## Bootstrapping a Box
+
+* [Windows](docs/bootstrap-windows.md)
+
+
 ## Roadmap
 
 * Support for `snap`. This does not work in `docker`, so I have no way (at the moment) to test.
