@@ -1,0 +1,13 @@
+{
+  "formula-id": "bat",
+  "platforms": {
+    "macos": {
+      "tool": "brew",
+      "package-id": "bat"
+    },
+    "ubuntu-noble": {
+      "tool": "apt",
+      "package-id": "bat"
+    }
+  }
+}

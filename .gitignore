@@ -1,0 +1,10 @@
+
+bin
+obj
+
+.idea
+*.user
+
+test/Micasa.UnitTests/coveragereport
+test/Micasa.UnitTests/coverage.opencover.xml
+
