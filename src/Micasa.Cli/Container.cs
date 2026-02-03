@@ -3,6 +3,8 @@
 
 using Micasa.Cli.Commands;
 using Micasa.Cli.Helpers;
+using Micasa.Cli.Installers;
+using Micasa.Cli.Parsers;
 using Micasa.Cli.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -20,13 +22,24 @@ namespace Micasa.Cli
             services.AddLogging(loggingBuilder =>
                 loggingBuilder.AddSerilog(dispose: true));
 
-            // Tooling
+            // General Tooling
+            services.AddSingleton<ICommandRunner, CommandRunner>();
             services.AddSingleton<IFormulaReader, FormulaReader>();
             services.AddSingleton<IPlatformDecoder, PlatformDecoder>();
             services.AddSingleton<IPlatformMatcher, PlatformMatcher>();
 
+            // Register installation drivers with keys matching the Tool string and a factory to resolve them
+            services.AddKeyedTransient<IInstallationDriver, HomebrewDriver>("homebrew");
+            services.AddKeyedTransient<IInstallationDriver, AdvancedPackageToolDriver>("apt");
+
+            services.AddSingleton<IDriverFactory, DriverFactory>();
+
+            // Parsers for command output
+            services.AddSingleton<IHomebrewInfoParser, HomebrewInfoParser>();
+
             // Register all the commands
             // TODO - should these be transient, scoped, or singleton?
+            services.AddScoped<InfoCommand>();
             services.AddScoped<InstallCommand>();
             services.AddScoped<UninstallCommand>();
 

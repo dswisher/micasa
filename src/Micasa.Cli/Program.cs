@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommandLine;
 using Micasa.Cli.Commands;
 using Micasa.Cli.Options;
+using Micasa.Cli.Options.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -20,12 +21,21 @@ namespace Micasa.Cli
             {
                 // Parse the args
                 var parsedArgs = Parser.Default.ParseArguments<
+                    InfoOptions,
                     InstallOptions,
                     UninstallOptions>(args);
 
                 // Set up logging
                 var logConfig = new LoggerConfiguration()
                     .WriteTo.Console();
+
+                if (parsedArgs.Value is ILogOptions lo)
+                {
+                    if (lo.Verbose)
+                    {
+                        logConfig.MinimumLevel.Debug();
+                    }
+                }
 
                 Log.Logger = logConfig.CreateLogger();
 
@@ -46,7 +56,9 @@ namespace Micasa.Cli
                     var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
                     using (var scope = scopeFactory.CreateScope())
                     {
+                        await parsedArgs.WithParsedAsync<InfoOptions>(options => scope.ServiceProvider.GetRequiredService<InfoCommand>().ExecuteAsync(options, tokenSource.Token));
                         await parsedArgs.WithParsedAsync<InstallOptions>(options => scope.ServiceProvider.GetRequiredService<InstallCommand>().ExecuteAsync(options, tokenSource.Token));
+                        await parsedArgs.WithParsedAsync<UninstallOptions>(options => scope.ServiceProvider.GetRequiredService<UninstallCommand>().ExecuteAsync(options, tokenSource.Token));
                     }
                 }
 

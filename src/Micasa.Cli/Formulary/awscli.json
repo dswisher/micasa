@@ -1,0 +1,9 @@
+{
+  "formula-id": "awscli",
+  "platforms": {
+    "macos": {
+      "tool": "homebrew",
+      "package-id": "awscli"
+    }
+  }
+}

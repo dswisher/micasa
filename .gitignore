@@ -8,3 +8,5 @@ obj
 test/Micasa.UnitTests/coveragereport
 test/Micasa.UnitTests/coverage.opencover.xml
 
+.docker-image
+

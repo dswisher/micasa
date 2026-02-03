@@ -1,0 +1,9 @@
+{
+  "formula-id": "jq",
+  "platforms": {
+    "macos": {
+      "tool": "homebrew",
+      "package-id": "jq"
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "formula-id": "bat",
   "platforms": {
     "macos": {
-      "tool": "brew",
+      "tool": "homebrew",
       "package-id": "bat"
     },
     "ubuntu-noble": {

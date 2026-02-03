@@ -26,7 +26,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Formulary\bat.json" />
+      <EmbeddedResource Include="Formulary\jq.json" />
+      <EmbeddedResource Include="Formulary\awscli.json" />
       <EmbeddedResource Include="Formulary\bat.json" />
     </ItemGroup>
 </Project>

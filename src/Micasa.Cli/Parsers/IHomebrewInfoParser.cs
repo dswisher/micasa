@@ -1,10 +1,12 @@
 // Copyright (c) Doug Swisher. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Micasa.Cli.Installers
+using Micasa.Cli.Models;
+
+namespace Micasa.Cli.Parsers
 {
-    public class HomebrewInstallationDriver : IInstallationDriver
+    public interface IHomebrewInfoParser
     {
-        // TODO - implement Homebrew installation logic
+        FormulaDetails Parse(string stdout);
     }
 }

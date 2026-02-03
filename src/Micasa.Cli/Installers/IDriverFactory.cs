@@ -7,8 +7,8 @@ using Micasa.Cli.Models;
 
 namespace Micasa.Cli.Installers
 {
-    public interface IInstallationDriver
+    public interface IDriverFactory
     {
-        Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken);
+        Task<DriverFactoryResult> GetDriverForFormulaAsync(string formulaName, CancellationToken stoppingToken);
     }
 }
