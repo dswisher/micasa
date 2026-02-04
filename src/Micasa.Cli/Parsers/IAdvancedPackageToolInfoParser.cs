@@ -3,7 +3,7 @@
 
 namespace Micasa.Cli.Parsers
 {
-    public interface IHomebrewInfoParser : IInfoParser
+    public interface IAdvancedPackageToolInfoParser : IInfoParser
     {
     }
 }

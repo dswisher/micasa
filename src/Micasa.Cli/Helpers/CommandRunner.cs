@@ -43,7 +43,11 @@ namespace Micasa.Cli.Helpers
             };
 
             // Create the initial scan result that will be populated as we go
-            var commandResult = new CommandRunnerResult();
+            var commandResult = new CommandRunnerResult
+            {
+                Command = command,
+                Arguments = arguments
+            };
 
             // Create a timeout token, so that we don't let commands run forever
             using (var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken))
@@ -114,6 +118,25 @@ namespace Micasa.Cli.Helpers
 
             // Return the result, after all that
             return commandResult;
+        }
+
+
+        public bool VerifyExitCodeZero(CommandRunnerResult statusResult)
+        {
+            if (statusResult.ExitCode == 0)
+            {
+                return true;
+            }
+
+            logger.LogError("'{Common} {Arguments}' command returned non-zero exit code, {ExitCode}.",
+                statusResult.Command, statusResult.Arguments, statusResult.ExitCode);
+
+            if (!string.IsNullOrEmpty(statusResult.StandardError))
+            {
+                logger.LogInformation("-> Standard Error:\n{StandardError}", statusResult.StandardError);
+            }
+
+            return false;
         }
 
 

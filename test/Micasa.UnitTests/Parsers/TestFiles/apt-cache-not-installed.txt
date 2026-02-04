@@ -1,0 +1,6 @@
+bat:
+  Installed: (none)
+  Candidate: 0.24.0-1build1
+  Version table:
+     0.24.0-1build1 500
+        500 http://ports.ubuntu.com/ubuntu-ports noble/universe arm64 Packages

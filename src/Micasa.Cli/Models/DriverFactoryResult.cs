@@ -8,6 +8,7 @@ namespace Micasa.Cli.Models
     public class DriverFactoryResult
     {
         public Formula? Formula { get; set; }
+        public string? Platform { get; set; }
         public InstallerDirective? InstallerDirective { get; set; }
         public IInstallationDriver? Driver { get; set; }
     }

@@ -50,13 +50,13 @@ namespace Micasa.Cli.Installers
             }
 
             // We have the formula, find the platform
-            var platform = platformDecoder.GetPlatformName();
-            var bestMatch = platformMatcher.FindBestMatch(platform, result.Formula.Platforms.Keys);
+            result.Platform = platformDecoder.GetPlatformName();
+            var bestMatch = platformMatcher.FindBestMatch(result.Platform, result.Formula.Platforms.Keys);
 
             if (bestMatch == null)
             {
                 logger.LogError("Could not find a matching platform for {Platform} in formula {FormulaName}. Known platforms: {KnownPlatforms}",
-                    platform, formulaName, string.Join(", ", result.Formula.Platforms.Keys));
+                    result.Platform, formulaName, string.Join(", ", result.Formula.Platforms.Keys));
                 return result;
             }
 

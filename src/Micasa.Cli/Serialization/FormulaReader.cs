@@ -23,6 +23,7 @@ namespace Micasa.Cli.Serialization
             // Build the path
             var path = $"Micasa.Cli.Formulary.{formulaName}.json";
 
+            // Load the content
             await using (var stream = assembly.GetManifestResourceStream(path))
             {
                 if (stream == null)

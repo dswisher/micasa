@@ -10,5 +10,8 @@ namespace Micasa.Cli.Installers
     public interface IInstallationDriver
     {
         Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken);
+
+        Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken);
+        Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken);
     }
 }

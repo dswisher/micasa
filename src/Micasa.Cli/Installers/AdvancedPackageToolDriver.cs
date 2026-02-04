@@ -3,15 +3,86 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Micasa.Cli.Helpers;
 using Micasa.Cli.Models;
+using Micasa.Cli.Parsers;
+using Microsoft.Extensions.Logging;
 
 namespace Micasa.Cli.Installers
 {
     public class AdvancedPackageToolDriver : IInstallationDriver
     {
-        public Task<FormulaDetails?> GetInfoAsync(InstallerDirective driverResultInstallerDirective, CancellationToken stoppingToken)
+        private readonly ICommandRunner commandRunner;
+        private readonly IAdvancedPackageToolInfoParser infoParser;
+        private readonly ILogger logger;
+
+        public AdvancedPackageToolDriver(
+            ICommandRunner commandRunner,
+            IAdvancedPackageToolInfoParser infoParser,
+            ILogger<AdvancedPackageToolDriver> logger)
         {
-            throw new System.NotImplementedException();
+            this.commandRunner = commandRunner;
+            this.infoParser = infoParser;
+            this.logger = logger;
+        }
+
+
+        public async Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        {
+            // Ask homebrew for the status of the formula
+            var statusResult = await commandRunner.RunCommandAsync("apt-cache", $"policy {directive.PackageId}", stoppingToken);
+
+            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(statusResult.StandardOutput))
+            {
+                logger.LogError("'{Command}' command returned no output for formula {Formula}.",
+                    statusResult.Command, directive.PackageId);
+
+                return null;
+            }
+
+            // Parse the result and return it
+            var details = infoParser.Parse(statusResult.StandardOutput);
+
+            return details;
+        }
+
+
+        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        {
+            // TODO - check to make sure the package is not already installed
+
+            // TODO - only apply sudo if we really need to
+            var statusResult = await commandRunner.RunCommandAsync("sudo", $"apt-get install -y {directive.PackageId}", stoppingToken);
+
+            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            {
+                return false;
+            }
+
+            // Success!
+            return true;
+        }
+
+
+        public async Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        {
+            // TODO - check to make sure the package is installed first
+
+            // TODO - only apply sudo if we really need to
+            var statusResult = await commandRunner.RunCommandAsync("sudo", $"apt-get remove -y {directive.PackageId}", stoppingToken);
+
+            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            {
+                return false;
+            }
+
+            // Success!
+            return true;
         }
     }
 }

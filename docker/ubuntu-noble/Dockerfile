@@ -2,14 +2,17 @@ FROM ubuntu:24.04
 
 # Install the things we need to allow the app to run
 RUN apt-get update && apt-get install -y \
-    sudo
+    sudo \
+    wget \
+    ca-certificates
 
-# Set Python 3 as the default python
-# RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-
-# Conditionally set up Zscaler certificate if present
-# COPY tmp/setup-zscaler.sh tmp/ZscalerRootCombined.pem /tmp/
-# RUN chmod +x /tmp/setup-zscaler.sh && /tmp/setup-zscaler.sh
+# Install .NET 10 SDK and show the intro message
+RUN wget https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y dotnet-sdk-10.0 && \
+    dotnet help
 
 # Create micasa user with sudo privileges
 RUN useradd -m -s /bin/bash micasa && \
@@ -19,8 +22,4 @@ RUN useradd -m -s /bin/bash micasa && \
 USER micasa
 WORKDIR /home/micasa
 
-# Create .config directory so Docker doesn't create it as root when mounting the manifest
-# RUN mkdir -p /home/micasa/.config
-
 CMD ["/bin/bash"]
-

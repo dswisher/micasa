@@ -34,4 +34,10 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\Micasa.Cli\Micasa.Cli.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Parsers\TestFiles\apt-cache-not-installed.txt" />
+      <EmbeddedResource Include="Parsers\TestFiles\apt-cache-installed.txt" />
+      <EmbeddedResource Include="Parsers\TestFiles\apt-cache-not-installed.txt" />
+    </ItemGroup>
 </Project>

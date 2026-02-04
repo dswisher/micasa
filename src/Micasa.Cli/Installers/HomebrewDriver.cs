@@ -34,14 +34,46 @@ namespace Micasa.Cli.Installers
 
             if (string.IsNullOrEmpty(statusResult.StandardOutput))
             {
-                logger.LogError("Homebrew info command returned no output for formula {Formula}.", directive.PackageId);
+                logger.LogError("'brew info' command returned no output for formula {Formula}.", directive.PackageId);
                 return null;
             }
 
-            // Parse the result
+            // Parse the result and return it
             var details = infoParser.Parse(statusResult.StandardOutput);
 
             return details;
+        }
+
+
+        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        {
+            // TODO - check to make sure the package is not already installed
+
+            var statusResult = await commandRunner.RunCommandAsync("brew", $"install {directive.PackageId}", stoppingToken);
+
+            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            {
+                return false;
+            }
+
+            // Success!
+            return true;
+        }
+
+
+        public async Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        {
+            // TODO - check to make sure the package is installed first
+
+            var statusResult = await commandRunner.RunCommandAsync("brew", $"uninstall {directive.PackageId}", stoppingToken);
+
+            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            {
+                return false;
+            }
+
+            // Success!
+            return true;
         }
     }
 }

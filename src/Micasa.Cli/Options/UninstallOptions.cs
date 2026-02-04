@@ -15,5 +15,9 @@ namespace Micasa.Cli.Options
         // ILogOptions
         [Option("verbose", HelpText = "Enable verbose (debug) logging.")]
         public bool Verbose { get; set; }
+
+        // Command-specific options
+        [Value(1, HelpText = "The name of the formula to install.")]
+        public required string FormulaName { get; set; }
     }
 }

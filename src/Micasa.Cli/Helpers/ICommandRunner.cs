@@ -11,5 +11,7 @@ namespace Micasa.Cli.Helpers
     {
         Task<CommandRunnerResult> RunCommandAsync(string command, string arguments, CancellationToken stoppingToken);
         Task<CommandRunnerResult> RunCommandAsync(string command, string arguments, string workDir, CancellationToken stoppingToken);
+
+        bool VerifyExitCodeZero(CommandRunnerResult statusResult);
     }
 }

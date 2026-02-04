@@ -7,6 +7,9 @@ namespace Micasa.Cli.Models
 {
     public class CommandRunnerResult
     {
+        public required string Command { get; init; }
+        public required string Arguments { get; init; }
+
         public TimeSpan? Duration { get; set; }
         public string? StandardOutput { get; set; }
         public string? StandardError { get; set; }

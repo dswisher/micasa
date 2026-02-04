@@ -12,4 +12,5 @@ run: .docker-image
 		--interactive \
 		--tty \
 		--name $(NAME) \
+		--volume ../../src:/home/micasa/src \
 		$(NAME)

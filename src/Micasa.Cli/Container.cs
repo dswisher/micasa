@@ -35,6 +35,7 @@ namespace Micasa.Cli
             services.AddSingleton<IDriverFactory, DriverFactory>();
 
             // Parsers for command output
+            services.AddSingleton<IAdvancedPackageToolInfoParser, AdvancedPackageToolInfoParser>();
             services.AddSingleton<IHomebrewInfoParser, HomebrewInfoParser>();
 
             // Register all the commands

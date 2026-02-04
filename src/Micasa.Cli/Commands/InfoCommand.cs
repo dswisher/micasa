@@ -32,6 +32,8 @@ namespace Micasa.Cli.Commands
                 return;
             }
 
+            logger.LogInformation("Platform:          {Platform}", driverResult.Platform);
+
             // Gather the information from the driver
             var info = await driverResult.Driver.GetInfoAsync(driverResult.InstallerDirective!, stoppingToken);
             if (info == null)
