@@ -3,7 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Micasa.Cli.Installers;
+using Micasa.Cli.Drivers;
 using Micasa.Cli.Options;
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +25,7 @@ namespace Micasa.Cli.Commands
 
         public async Task ExecuteAsync(InstallOptions options, CancellationToken stoppingToken)
         {
-            // Read the formula and get the installation driver
+            // Read the formula and get the driver
             var driverResult = await driverFactory.GetDriverForFormulaAsync(options.FormulaName, stoppingToken);
 
             if (driverResult.Driver == null)

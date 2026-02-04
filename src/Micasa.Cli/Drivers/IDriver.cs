@@ -5,9 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Micasa.Cli.Models;
 
-namespace Micasa.Cli.Installers
+namespace Micasa.Cli.Drivers
 {
-    public interface IInstallationDriver
+    public interface IDriver
     {
         Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken);
 

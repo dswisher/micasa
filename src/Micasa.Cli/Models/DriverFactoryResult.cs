@@ -1,7 +1,7 @@
 // Copyright (c) Doug Swisher. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Micasa.Cli.Installers;
+using Micasa.Cli.Drivers;
 
 namespace Micasa.Cli.Models
 {
@@ -10,6 +10,6 @@ namespace Micasa.Cli.Models
         public Formula? Formula { get; set; }
         public string? Platform { get; set; }
         public InstallerDirective? InstallerDirective { get; set; }
-        public IInstallationDriver? Driver { get; set; }
+        public IDriver? Driver { get; set; }
     }
 }

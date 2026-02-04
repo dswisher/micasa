@@ -10,7 +10,7 @@ using Micasa.Cli.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Micasa.Cli.Installers
+namespace Micasa.Cli.Drivers
 {
     public class DriverFactory : IDriverFactory
     {
@@ -63,7 +63,7 @@ namespace Micasa.Cli.Installers
             result.InstallerDirective = result.Formula.Platforms[bestMatch];
 
             // Find the driver that corresponds to the best match
-            result.Driver = serviceProvider.GetKeyedService<IInstallationDriver>(result.InstallerDirective.Tool);
+            result.Driver = serviceProvider.GetKeyedService<IDriver>(result.InstallerDirective.Tool);
 
             if (result.Driver == null)
             {

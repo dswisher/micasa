@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Micasa.Cli.Commands;
+using Micasa.Cli.Drivers;
 using Micasa.Cli.Helpers;
-using Micasa.Cli.Installers;
 using Micasa.Cli.Parsers;
 using Micasa.Cli.Serialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,9 +28,9 @@ namespace Micasa.Cli
             services.AddSingleton<IPlatformDecoder, PlatformDecoder>();
             services.AddSingleton<IPlatformMatcher, PlatformMatcher>();
 
-            // Register installation drivers with keys matching the Tool string and a factory to resolve them
-            services.AddKeyedTransient<IInstallationDriver, HomebrewDriver>("homebrew");
-            services.AddKeyedTransient<IInstallationDriver, AdvancedPackageToolDriver>("apt");
+            // Register drivers with keys matching the Tool string and a factory to resolve them
+            services.AddKeyedTransient<IDriver, HomebrewDriver>("homebrew");
+            services.AddKeyedTransient<IDriver, AdvancedPackageToolDriver>("apt");
 
             services.AddSingleton<IDriverFactory, DriverFactory>();
 

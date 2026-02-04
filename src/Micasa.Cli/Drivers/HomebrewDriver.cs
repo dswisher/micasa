@@ -8,18 +8,18 @@ using Micasa.Cli.Models;
 using Micasa.Cli.Parsers;
 using Microsoft.Extensions.Logging;
 
-namespace Micasa.Cli.Installers
+namespace Micasa.Cli.Drivers
 {
-    public class AdvancedPackageToolDriver : IInstallationDriver
+    public class HomebrewDriver : IDriver
     {
         private readonly ICommandRunner commandRunner;
-        private readonly IAdvancedPackageToolInfoParser infoParser;
+        private readonly IHomebrewInfoParser infoParser;
         private readonly ILogger logger;
 
-        public AdvancedPackageToolDriver(
+        public HomebrewDriver(
             ICommandRunner commandRunner,
-            IAdvancedPackageToolInfoParser infoParser,
-            ILogger<AdvancedPackageToolDriver> logger)
+            IHomebrewInfoParser infoParser,
+            ILogger<HomebrewDriver> logger)
         {
             this.commandRunner = commandRunner;
             this.infoParser = infoParser;
@@ -30,18 +30,11 @@ namespace Micasa.Cli.Installers
         public async Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // Ask homebrew for the status of the formula
-            var statusResult = await commandRunner.RunCommandAsync("apt-cache", $"policy {directive.PackageId}", stoppingToken);
-
-            if (!commandRunner.VerifyExitCodeZero(statusResult))
-            {
-                return null;
-            }
+            var statusResult = await commandRunner.RunCommandAsync("brew", $"info --json=v2 {directive.PackageId}", stoppingToken);
 
             if (string.IsNullOrEmpty(statusResult.StandardOutput))
             {
-                logger.LogError("'{Command}' command returned no output for formula {Formula}.",
-                    statusResult.Command, directive.PackageId);
-
+                logger.LogError("'brew info' command returned no output for formula {Formula}.", directive.PackageId);
                 return null;
             }
 
@@ -56,8 +49,7 @@ namespace Micasa.Cli.Installers
         {
             // TODO - check to make sure the package is not already installed
 
-            // TODO - only apply sudo if we really need to
-            var statusResult = await commandRunner.RunCommandAsync("sudo", $"apt-get install -y {directive.PackageId}", stoppingToken);
+            var statusResult = await commandRunner.RunCommandAsync("brew", $"install {directive.PackageId}", stoppingToken);
 
             if (!commandRunner.VerifyExitCodeZero(statusResult))
             {
@@ -73,8 +65,7 @@ namespace Micasa.Cli.Installers
         {
             // TODO - check to make sure the package is installed first
 
-            // TODO - only apply sudo if we really need to
-            var statusResult = await commandRunner.RunCommandAsync("sudo", $"apt-get remove -y {directive.PackageId}", stoppingToken);
+            var statusResult = await commandRunner.RunCommandAsync("brew", $"uninstall {directive.PackageId}", stoppingToken);
 
             if (!commandRunner.VerifyExitCodeZero(statusResult))
             {

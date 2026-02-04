@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Micasa.Cli.Models;
 
-namespace Micasa.Cli.Installers
+namespace Micasa.Cli.Drivers
 {
     public interface IDriverFactory
     {
