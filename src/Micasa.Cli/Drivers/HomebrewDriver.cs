@@ -49,9 +49,9 @@ namespace Micasa.Cli.Drivers
         {
             // TODO - check to make sure the package is not already installed
 
-            var statusResult = await commandRunner.RunCommandAsync("brew", $"install {directive.PackageId}", stoppingToken);
+            var installResult = await commandRunner.RunCommandAsync("brew", $"install {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            if (!commandRunner.VerifyExitCodeZero(installResult))
             {
                 return false;
             }
@@ -65,9 +65,9 @@ namespace Micasa.Cli.Drivers
         {
             // TODO - check to make sure the package is installed first
 
-            var statusResult = await commandRunner.RunCommandAsync("brew", $"uninstall {directive.PackageId}", stoppingToken);
+            var uninstallResult = await commandRunner.RunCommandAsync("brew", $"uninstall {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            if (!commandRunner.VerifyExitCodeZero(uninstallResult))
             {
                 return false;
             }

@@ -37,6 +37,7 @@ namespace Micasa.Cli.Helpers
             return $"{os}-{version}-{arch}";
         }
 
+
         private static string GetOperatingSystem()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -52,6 +53,7 @@ namespace Micasa.Cli.Helpers
             throw new PlatformNotSupportedException($"Unsupported operating system: {RuntimeInformation.OSDescription}");
         }
 
+
         private string GetOsVersion()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -66,6 +68,7 @@ namespace Micasa.Cli.Helpers
 
             throw new PlatformNotSupportedException($"Unsupported operating system: {RuntimeInformation.OSDescription}");
         }
+
 
         private string GetMacOsVersion()
         {
@@ -113,7 +116,7 @@ namespace Micasa.Cli.Helpers
                     {
                         "ubuntu" => "ubuntu",
                         "debian" => "debian",
-                        "amzn" => "amazonlinux",
+                        "amzn" => "amazon",
                         _ => throw new PlatformNotSupportedException($"Unsupported Linux distribution: {distro}")
                     };
                 }
@@ -130,17 +133,31 @@ namespace Micasa.Cli.Helpers
             if (File.Exists(osReleasePath))
             {
                 var lines = File.ReadAllLines(osReleasePath);
+                var map = new Dictionary<string, string>();
+
                 foreach (var line in lines)
                 {
-                    if (line.StartsWith("VERSION_CODENAME=", StringComparison.Ordinal))
-                    {
-                        return line.Substring("VERSION_CODENAME=".Length).Trim('"');
-                    }
+                    var pos = line.IndexOf('=');
+                    var key = line.Substring(0, pos);
+                    var value = line.Substring(pos + 1).Trim('"');
 
-                    if (line.StartsWith("UBUNTU_CODENAME=", StringComparison.Ordinal))
-                    {
-                        return line.Substring("UBUNTU_CODENAME=".Length).Trim('"');
-                    }
+                    map.Add(key, value);
+                }
+
+                if (map.TryGetValue("VERSION_CODENAME", out var version))
+                {
+                    return version;
+                }
+
+                if (map.TryGetValue("UBUNTU_CODENAME", out version))
+                {
+                    return version;
+                }
+
+                // This is for Amazon Linux 2023
+                if (map.TryGetValue("VERSION", out version))
+                {
+                    return version;
                 }
             }
 

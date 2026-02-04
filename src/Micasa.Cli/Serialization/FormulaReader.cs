@@ -14,7 +14,8 @@ namespace Micasa.Cli.Serialization
         private readonly Assembly assembly = typeof(FormulaReader).Assembly;
         private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions
         {
-            PropertyNamingPolicy = new JsonKebabCaseNamingPolicy()
+            PropertyNamingPolicy = new JsonKebabCaseNamingPolicy(),
+            ReadCommentHandling = JsonCommentHandling.Skip
         };
 
 

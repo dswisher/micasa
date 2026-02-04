@@ -57,9 +57,9 @@ namespace Micasa.Cli.Drivers
             // TODO - check to make sure the package is not already installed
 
             // TODO - only apply sudo if we really need to
-            var statusResult = await commandRunner.RunCommandAsync("sudo", $"apt-get install -y {directive.PackageId}", stoppingToken);
+            var installResult = await commandRunner.RunCommandAsync("sudo", $"apt-get install -y {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            if (!commandRunner.VerifyExitCodeZero(installResult))
             {
                 return false;
             }
@@ -74,9 +74,9 @@ namespace Micasa.Cli.Drivers
             // TODO - check to make sure the package is installed first
 
             // TODO - only apply sudo if we really need to
-            var statusResult = await commandRunner.RunCommandAsync("sudo", $"apt-get remove -y {directive.PackageId}", stoppingToken);
+            var uninstallResult = await commandRunner.RunCommandAsync("sudo", $"apt-get remove -y {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(statusResult))
+            if (!commandRunner.VerifyExitCodeZero(uninstallResult))
             {
                 return false;
             }

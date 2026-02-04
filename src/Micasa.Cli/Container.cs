@@ -22,6 +22,9 @@ namespace Micasa.Cli
             services.AddLogging(loggingBuilder =>
                 loggingBuilder.AddSerilog(dispose: true));
 
+            // We download stuff using HTTPS
+            services.AddHttpClient();
+
             // General Tooling
             services.AddSingleton<ICommandRunner, CommandRunner>();
             services.AddSingleton<IFormulaReader, FormulaReader>();
@@ -29,8 +32,9 @@ namespace Micasa.Cli
             services.AddSingleton<IPlatformMatcher, PlatformMatcher>();
 
             // Register drivers with keys matching the Tool string and a factory to resolve them
-            services.AddKeyedTransient<IDriver, HomebrewDriver>("homebrew");
             services.AddKeyedTransient<IDriver, AdvancedPackageToolDriver>("apt");
+            services.AddKeyedTransient<IDriver, ShellScriptDriver>("shell-script");
+            services.AddKeyedTransient<IDriver, HomebrewDriver>("homebrew");
 
             services.AddSingleton<IDriverFactory, DriverFactory>();
 

@@ -10,6 +10,7 @@ using Micasa.Cli.Options;
 using Micasa.Cli.Options.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Events;
 
 namespace Micasa.Cli
 {
@@ -27,6 +28,7 @@ namespace Micasa.Cli
 
                 // Set up logging
                 var logConfig = new LoggerConfiguration()
+                    .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
                     .WriteTo.Console();
 
                 if (parsedArgs.Value is ILogOptions lo)

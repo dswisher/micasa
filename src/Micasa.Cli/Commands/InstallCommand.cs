@@ -38,6 +38,11 @@ namespace Micasa.Cli.Commands
             if (ok)
             {
                 logger.LogInformation("Installation of {Formula} completed successfully.", options.FormulaName);
+
+                if (!string.IsNullOrEmpty(driverResult.InstallerDirective!.Executable))
+                {
+                    logger.LogInformation("Executable: '{Executable}'", driverResult.InstallerDirective.Executable);
+                }
             }
         }
     }

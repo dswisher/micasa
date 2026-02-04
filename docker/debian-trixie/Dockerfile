@@ -1,18 +1,18 @@
-FROM ubuntu:24.04
+# aka debian 13
+FROM debian:trixie
 
-# Install the things we need to allow the app to run
+# Install Python, sudo, and other tools needed for testing
 RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    curl \
     sudo \
-    wget
+    wget \
+    ca-certificates
 
 # Conditionally set up proxy certificates.
 COPY tmp/config-proxy-certs.sh tmp/proxy-certs.pem /tmp/
 RUN chmod +x /tmp/config-proxy-certs.sh && /tmp/config-proxy-certs.sh
 
 # Add Microsoft package repository and install .NET 10 SDK
-RUN wget https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \
     rm packages-microsoft-prod.deb && \
     apt-get update && \

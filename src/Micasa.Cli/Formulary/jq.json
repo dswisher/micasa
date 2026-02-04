@@ -1,8 +1,20 @@
 {
   "formula-id": "jq",
   "platforms": {
+    "amazon-2023": {
+      "tool": "dnf",
+      "package-id": "jq"
+    },
+    "debian": {
+      "tool": "apt",
+      "package-id": "jq"
+    },
     "macos": {
       "tool": "homebrew",
+      "package-id": "jq"
+    },
+    "ubuntu": {
+      "tool": "apt",
       "package-id": "jq"
     }
   }

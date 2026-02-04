@@ -1,13 +1,18 @@
 {
   "formula-id": "bat",
   "platforms": {
+    "debian": {
+      "tool": "apt",
+      "package-id": "bat"
+    },
     "macos": {
       "tool": "homebrew",
       "package-id": "bat"
     },
-    "ubuntu-noble": {
+    "ubuntu": {
       "tool": "apt",
-      "package-id": "bat"
+      "package-id": "bat",
+      "executable": "batcat"
     }
   }
 }

@@ -10,3 +10,5 @@ test/Micasa.UnitTests/coverage.opencover.xml
 
 .docker-image
 
+docker/*/tmp/
+

@@ -42,6 +42,11 @@ namespace Micasa.Cli.Helpers
                 RedirectStandardError = true
             };
 
+            // Set the BINDIR to ~/.local/bin, as some install scripts use that (chezmoi)
+            string homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string binDir = Path.Combine(homeDir, ".local", "bin");
+            psi.Environment["BINDIR"] = binDir;
+
             // Create the initial scan result that will be populated as we go
             var commandResult = new CommandRunnerResult
             {

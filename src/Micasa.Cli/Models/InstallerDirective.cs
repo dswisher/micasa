@@ -11,5 +11,8 @@ namespace Micasa.Cli.Models
     {
         public required string Tool { get; set; }
         public string? PackageId { get; set; }
+        public string? Executable { get; set; }
+        public string? VersionFlag { get; set; }
+        public string? InstallerUrl { get; set; }
     }
 }

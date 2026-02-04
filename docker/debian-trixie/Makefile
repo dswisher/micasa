@@ -1,4 +1,4 @@
-NAME=ubuntu-noble
+NAME=debian-trixie
 
 include ../common.mk
 
