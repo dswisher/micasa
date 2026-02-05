@@ -6,7 +6,7 @@ using Micasa.Cli.Models;
 
 namespace Micasa.Cli.Parsers
 {
-    public class AdvancedPackageToolInfoParser : IAdvancedPackageToolInfoParser
+    public class AptInfoParser : IAptInfoParser
     {
         public FormulaDetails Parse(string stdout)
         {

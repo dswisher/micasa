@@ -31,5 +31,6 @@
       <EmbeddedResource Include="Formulary\jq.json" />
       <EmbeddedResource Include="Formulary\awscli.json" />
       <EmbeddedResource Include="Formulary\bat.json" />
+      <EmbeddedResource Include="Formulary\zoxide.json" />
     </ItemGroup>
 </Project>

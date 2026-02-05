@@ -29,7 +29,7 @@ namespace Micasa.Cli.Drivers
 
         public async Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
-            // Ask homebrew for the status of the formula
+            // Ask the package manager for the status of the formula
             var statusResult = await commandRunner.RunCommandAsync("brew", $"info --json=v2 {directive.PackageId}", stoppingToken);
 
             if (string.IsNullOrEmpty(statusResult.StandardOutput))

@@ -5,6 +5,10 @@ namespace Micasa.Cli.Helpers
 {
     public interface IPlatformDecoder
     {
-        string GetPlatformName();
+        string OperatingSystem { get; }
+        string OsVersion { get; }
+        string SystemArchitecture { get; }
+
+        string PlatformName { get; }
     }
 }

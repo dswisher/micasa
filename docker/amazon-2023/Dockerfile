@@ -5,11 +5,13 @@ FROM amazonlinux:2023
 RUN dnf install -y \
     ca-certificates \
     findutils \
+    git \
     gzip \
     libicu \
     shadow-utils \
-    sudo\
-    tar
+    sudo \
+    tar \
+    which
 
 # Conditionally set up proxy certificates.
 COPY tmp/config-proxy-certs.sh tmp/proxy-certs.pem /tmp/

@@ -23,19 +23,24 @@ namespace Micasa.Cli.Helpers
             { 15, "sequoia" }
         };
 
+
         public PlatformDecoder(ICommandRunner commandRunner)
         {
             this.commandRunner = commandRunner;
+
+            OperatingSystem = GetOperatingSystem();
+            OsVersion = GetOsVersion();
+            SystemArchitecture = GetArchitecture();
+
+            PlatformName = $"{OperatingSystem}-{OsVersion}-{SystemArchitecture}";
         }
 
-        public string GetPlatformName()
-        {
-            var os = GetOperatingSystem();
-            var version = GetOsVersion();
-            var arch = GetArchitecture();
 
-            return $"{os}-{version}-{arch}";
-        }
+        public string OperatingSystem { get; }
+        public string OsVersion { get; }
+        public string SystemArchitecture { get; }
+
+        public string PlatformName { get; }
 
 
         private static string GetOperatingSystem()
@@ -171,6 +176,7 @@ namespace Micasa.Cli.Helpers
 
             return result.StandardOutput.Trim();
         }
+
 
         private static string GetArchitecture()
         {

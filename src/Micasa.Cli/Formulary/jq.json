@@ -5,16 +5,12 @@
       "tool": "dnf",
       "package-id": "jq"
     },
-    "debian": {
+    "debian|ubuntu": {
       "tool": "apt",
       "package-id": "jq"
     },
     "macos": {
       "tool": "homebrew",
-      "package-id": "jq"
-    },
-    "ubuntu": {
-      "tool": "apt",
       "package-id": "jq"
     }
   }

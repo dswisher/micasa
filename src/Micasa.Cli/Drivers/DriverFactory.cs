@@ -50,7 +50,7 @@ namespace Micasa.Cli.Drivers
             }
 
             // We have the formula, find the platform
-            result.Platform = platformDecoder.GetPlatformName();
+            result.Platform = platformDecoder.PlatformName;
             var bestMatch = platformMatcher.FindBestMatch(result.Platform, result.Formula.Platforms.Keys);
 
             if (bestMatch == null)

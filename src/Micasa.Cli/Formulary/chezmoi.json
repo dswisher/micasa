@@ -1,27 +1,13 @@
 {
   "formula-id": "chezmoi",
   "platforms": {
-    "amazon-2023": {
+    "amazon-2023|debian|ubuntu": {
       "tool": "shell-script",
-      "installer-url": "https://get.chezmoi.io/",
-      "executable": "chezmoi",
-      "version-flag": "--version"
-    },
-    "debian": {
-      "tool": "shell-script",
-      "installer-url": "https://get.chezmoi.io/",
-      "executable": "chezmoi",
-      "version-flag": "--version"
+      "installer-url": "https://get.chezmoi.io/"
     },
     "macos": {
       "tool": "homebrew",
       "package-id": "chezmoi"
-    },
-    "ubuntu": {
-      "tool": "shell-script",
-      "installer-url": "https://get.chezmoi.io/",
-      "executable": "chezmoi",
-      "version-flag": "--version"
     }
   }
 }

@@ -10,16 +10,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Micasa.Cli.Drivers
 {
-    public class AdvancedPackageToolDriver : IDriver
+    public class AptDriver : IDriver
     {
         private readonly ICommandRunner commandRunner;
-        private readonly IAdvancedPackageToolInfoParser infoParser;
+        private readonly IAptInfoParser infoParser;
         private readonly ILogger logger;
 
-        public AdvancedPackageToolDriver(
+        public AptDriver(
             ICommandRunner commandRunner,
-            IAdvancedPackageToolInfoParser infoParser,
-            ILogger<AdvancedPackageToolDriver> logger)
+            IAptInfoParser infoParser,
+            ILogger<AptDriver> logger)
         {
             this.commandRunner = commandRunner;
             this.infoParser = infoParser;
@@ -29,7 +29,7 @@ namespace Micasa.Cli.Drivers
 
         public async Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
-            // Ask homebrew for the status of the formula
+            // Ask the package manager for the status of the formula
             var statusResult = await commandRunner.RunCommandAsync("apt-cache", $"policy {directive.PackageId}", stoppingToken);
 
             if (!commandRunner.VerifyExitCodeZero(statusResult))

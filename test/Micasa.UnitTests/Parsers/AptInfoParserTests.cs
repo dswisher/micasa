@@ -11,11 +11,11 @@ using Xunit;
 
 namespace Micasa.UnitTests.Parsers
 {
-    public class AdvancedPackageToolInfoParserTests
+    public class AptInfoParserTests
     {
-        private static readonly Assembly Assembly = typeof(AdvancedPackageToolInfoParserTests).Assembly;
+        private static readonly Assembly Assembly = typeof(AptInfoParserTests).Assembly;
 
-        private readonly AdvancedPackageToolInfoParser parser = new();
+        private readonly AptInfoParser parser = new();
 
         public static IEnumerable<object[]> TestCases => BuildTestCases().Select(x => new object[] { x });
 

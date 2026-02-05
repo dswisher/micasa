@@ -1,0 +1,13 @@
+{
+  "formula-id": "zoxide",
+  "platforms": {
+    "amazon-2023|debian|ubuntu": {
+      "tool": "shell-script",
+      "installer-url": "https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
+    },
+    "macos": {
+      "tool": "homebrew",
+      "package-id": "zoxide"
+    }
+  }
+}
