@@ -72,7 +72,7 @@ namespace Micasa.Cli.Drivers
                 await fileDownloader.DownloadFileAsync(bestAsset.BrowserDownloadUrl, tempScriptPath, stoppingToken);
 
                 // Unpack the archive
-                await archiveUnpacker.UnpackAsync(tempScriptPath, stoppingToken);
+                await archiveUnpacker.UnpackAsync(directive, tempScriptPath, stoppingToken);
 
                 // Move the unpacked files to the desired installation location
                 // TODO - move files to installation location

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Micasa.Cli.GitHub;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -20,6 +21,7 @@ namespace Micasa.UnitTests.GitHub
         private static readonly Assembly Assembly = typeof(GitHubReleaseInfoFetcherTests).Assembly;
 
         private readonly IHttpClientFactory httpClientFactory = Substitute.For<IHttpClientFactory>();
+        private readonly ILogger<GitHubReleaseInfoFetcher> logger = Substitute.For<ILogger<GitHubReleaseInfoFetcher>>();
         private readonly GitHubReleaseInfoFetcher fetcher;
 
         private readonly CancellationToken token = CancellationToken.None;
@@ -27,7 +29,7 @@ namespace Micasa.UnitTests.GitHub
 
         public GitHubReleaseInfoFetcherTests()
         {
-            fetcher = new GitHubReleaseInfoFetcher(httpClientFactory);
+            fetcher = new GitHubReleaseInfoFetcher(httpClientFactory, logger);
         }
 
 

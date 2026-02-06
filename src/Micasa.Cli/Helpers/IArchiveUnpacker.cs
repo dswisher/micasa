@@ -3,11 +3,12 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Micasa.Cli.Models;
 
 namespace Micasa.Cli.Helpers
 {
     public interface IArchiveUnpacker
     {
-        Task UnpackAsync(string tempScriptPath, CancellationToken stoppingToken);
+        Task<bool> UnpackAsync(InstallerDirective directive, string archivePath, CancellationToken stoppingToken);
     }
 }

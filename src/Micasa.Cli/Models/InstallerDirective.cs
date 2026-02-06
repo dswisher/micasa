@@ -33,5 +33,13 @@ namespace Micasa.Cli.Models
         /// The URL of the github repo for the project, used to fetch latest releases.
         /// </summary>
         public string? RepoUrl { get; set; }
+
+        /// <summary>
+        /// For .appimage files, indicates whether FUSE is required to run the AppImage.
+        /// </summary>
+        /// <remarks>
+        /// This will typically trigger unpacking the AppImage (neovim, for example).
+        /// </remarks>
+        public bool? RequiresFuse { get; set; }
     }
 }
