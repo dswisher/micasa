@@ -1,13 +1,13 @@
 {
-  "formula-id": "bat",
+  "formula-id": "fd",
   "platforms": {
     "amazon-2023|debian|ubuntu": {
       "tool": "github-archive",
-      "repo-url": "https://github.com/sharkdp/bat"
+      "repo-url": "https://github.com/sharkdp/fd"
     },
     "macos": {
       "tool": "homebrew",
-      "package-id": "bat"
+      "package-id": "fd"
     }
   }
 }

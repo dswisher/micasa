@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FluentAssertions;
 using Micasa.Cli.Parsers;
+using Shouldly;
 using Xunit;
 
 namespace Micasa.UnitTests.Parsers
@@ -28,9 +28,9 @@ namespace Micasa.UnitTests.Parsers
             var details = parser.Parse(testCase.Stdout);
 
             // Assert
-            details.PackageId.Should().Be(testCase.ExpectedPackageId);
-            details.StableVersion.Should().Be(testCase.ExpectedStableVersion);
-            details.InstalledVersion.Should().Be(testCase.ExpectedInstalledVersion);
+            details.PackageId.ShouldBe(testCase.ExpectedPackageId);
+            details.StableVersion.ShouldBe(testCase.ExpectedStableVersion);
+            details.InstalledVersion.ShouldBe(testCase.ExpectedInstalledVersion);
         }
 
 

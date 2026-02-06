@@ -1,14 +1,12 @@
 // Copyright (c) Doug Swisher. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Micasa.Cli.Models.GitHub;
 
 namespace Micasa.Cli.GitHub
 {
-    public interface IGitHubReleaseInfoFetcher
+    public interface IGitHubArchiveSeeker
     {
-        Task<GitHubReleaseInfo> FetchLatestReleaseInfoAsync(string repoUrl, CancellationToken stoppingToken);
+        GitHubAsset FindBestAsset(GitHubReleaseInfo releaseInfo);
     }
 }

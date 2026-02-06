@@ -3,8 +3,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
 using Micasa.Cli.Helpers;
+using Shouldly;
 using Xunit;
 
 namespace Micasa.UnitTests.Helpers
@@ -25,7 +25,7 @@ namespace Micasa.UnitTests.Helpers
             var actualMatch = matcher.FindBestMatch(testCase.Platform, testCase.AvailablePlatforms);
 
             // Assert
-            actualMatch.Should().Be(testCase.ExpectedMatch);
+            actualMatch.ShouldBe(testCase.ExpectedMatch);
         }
 
 

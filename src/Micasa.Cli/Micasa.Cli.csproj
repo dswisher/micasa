@@ -28,9 +28,15 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Formulary\chezmoi.json" />
+      <EmbeddedResource Include="Formulary\eza.json" />
+      <EmbeddedResource Include="Formulary\fd.json" />
+      <EmbeddedResource Include="Formulary\fzf.json" />
       <EmbeddedResource Include="Formulary\jq.json" />
       <EmbeddedResource Include="Formulary\awscli.json" />
       <EmbeddedResource Include="Formulary\bat.json" />
+      <EmbeddedResource Include="Formulary\lazygit.json" />
+      <EmbeddedResource Include="Formulary\neovim.json" />
+      <EmbeddedResource Include="Formulary\ripgrep.json" />
       <EmbeddedResource Include="Formulary\zoxide.json" />
     </ItemGroup>
 </Project>

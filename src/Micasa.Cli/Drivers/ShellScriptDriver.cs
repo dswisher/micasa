@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Micasa.Cli.Helpers;
@@ -14,16 +13,16 @@ namespace Micasa.Cli.Drivers
 {
     public class ShellScriptDriver : IDriver
     {
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IFileDownloader fileDownloader;
         private readonly ICommandRunner commandRunner;
         private readonly ILogger logger;
 
         public ShellScriptDriver(
-            IHttpClientFactory httpClientFactory,
+            IFileDownloader fileDownloader,
             ICommandRunner commandRunner,
             ILogger<ShellScriptDriver> logger)
         {
-            this.httpClientFactory = httpClientFactory;
+            this.fileDownloader = fileDownloader;
             this.commandRunner = commandRunner;
             this.logger = logger;
         }
@@ -37,6 +36,13 @@ namespace Micasa.Cli.Drivers
 
         public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
+            // Sanity check
+            if (string.IsNullOrEmpty(directive.InstallerUrl))
+            {
+                logger.LogError("ShellScriptDriver requires an InstallerUrl in the installer directive.");
+                return false;
+            }
+
             // Get a temporary path for the install script that we're about to download
             var tempDir = Path.GetTempPath();
             var tempScriptPath = Path.Combine(tempDir, $"{Path.GetRandomFileName()}.sh");
@@ -44,18 +50,7 @@ namespace Micasa.Cli.Drivers
             try
             {
                 // Download the install script
-                logger.LogDebug("...downloading {Url} to {Path}...", directive.InstallerUrl, tempScriptPath);
-
-                using (var httpClient = httpClientFactory.CreateClient())
-                using (var response = await httpClient.GetAsync(directive.InstallerUrl, stoppingToken))
-                {
-                    response.EnsureSuccessStatusCode();
-
-                    await using (var fileStream = File.Create(tempScriptPath))
-                    {
-                        await response.Content.CopyToAsync(fileStream, stoppingToken);
-                    }
-                }
+                await fileDownloader.DownloadFileAsync(directive.InstallerUrl, tempScriptPath, stoppingToken);
 
                 // Run the install script, via the shell
                 var installResult = await commandRunner.RunCommandAsync("sh", tempScriptPath, stoppingToken);

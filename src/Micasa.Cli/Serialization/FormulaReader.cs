@@ -13,7 +13,7 @@ namespace Micasa.Cli.Serialization
     public class FormulaReader : IFormulaReader
     {
         private readonly Assembly assembly = typeof(FormulaReader).Assembly;
-        private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+        private readonly JsonSerializerOptions serializerOptions = new()
         {
             PropertyNamingPolicy = new JsonKebabCaseNamingPolicy(),
             ReadCommentHandling = JsonCommentHandling.Skip

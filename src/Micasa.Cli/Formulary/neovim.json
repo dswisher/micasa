@@ -1,13 +1,14 @@
 {
-  "formula-id": "bat",
+  "formula-id": "neovim",
   "platforms": {
     "amazon-2023|debian|ubuntu": {
       "tool": "github-archive",
-      "repo-url": "https://github.com/sharkdp/bat"
+      "repo-url": "https://github.com/neovim/neovim",
+      "executable": "nvim"
     },
     "macos": {
       "tool": "homebrew",
-      "package-id": "bat"
+      "package-id": "neovim"
     }
   }
 }

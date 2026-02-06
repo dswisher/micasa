@@ -27,17 +27,21 @@ namespace Micasa.Cli
             services.AddHttpClient();
 
             // Helpers
+            services.AddSingleton<IArchiveUnpacker, ArchiveUnpacker>();
             services.AddSingleton<ICommandRunner, CommandRunner>();
+            services.AddSingleton<IFileDownloader, FileDownloader>();
             services.AddSingleton<IFormulaReader, FormulaReader>();
             services.AddSingleton<IPlatformDecoder, PlatformDecoder>();
             services.AddSingleton<IPlatformMatcher, PlatformMatcher>();
 
             // GitHub stuff
             services.AddSingleton<IGitHubReleaseInfoFetcher, GitHubReleaseInfoFetcher>();
+            services.AddSingleton<IGitHubArchiveSeeker, GitHubArchiveSeeker>();
 
             // Register drivers with keys matching the Tool string and a factory to resolve them
             services.AddKeyedTransient<IDriver, AptDriver>("apt");
             services.AddKeyedTransient<IDriver, DnfDriver>("dnf");
+            services.AddKeyedTransient<IDriver, GithubArchiveDriver>("github-archive");
             services.AddKeyedTransient<IDriver, HomebrewDriver>("homebrew");
             services.AddKeyedTransient<IDriver, ShellScriptDriver>("shell-script");
 
