@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Micasa.Cli.Exceptions;
 using Micasa.Cli.GitHub;
 using Micasa.Cli.Helpers;
 using Micasa.Cli.Models;
@@ -45,7 +46,7 @@ namespace Micasa.Cli.Drivers
         }
 
 
-        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             string? tempDir = null;
 
@@ -54,8 +55,7 @@ namespace Micasa.Cli.Drivers
                 // Fetch info on the latest release from GitHub
                 if (string.IsNullOrEmpty(directive.RepoUrl))
                 {
-                    logger.LogError("GitHubArchiveDriver requires a RepoUrl in the installer directive.");
-                    return false;
+                    throw new MicasaException("GitHubArchiveDriver requires a RepoUrl in the installer directive.");
                 }
 
                 var releaseInfo = await infoFetcher.FetchLatestReleaseInfoAsync(directive.RepoUrl, stoppingToken);
@@ -69,7 +69,7 @@ namespace Micasa.Cli.Drivers
 
                 if (Directory.Exists(tempDir))
                 {
-                    throw new Exception($"Temporary directory {tempDir} already exists.");
+                    throw new MicasaException($"Temporary directory {tempDir} already exists.");
                 }
 
                 Directory.CreateDirectory(tempDir);
@@ -77,27 +77,10 @@ namespace Micasa.Cli.Drivers
                 await fileDownloader.DownloadFileAsync(bestAsset.BrowserDownloadUrl, tempScriptPath, stoppingToken);
 
                 // Unpack the archive
-                var ok = await archiveUnpacker.UnpackAsync(directive, tempScriptPath, stoppingToken);
-
-                if (!ok)
-                {
-                    logger.LogError("Failed to unpack the downloaded archive.");
-                    return false;
-                }
+                await archiveUnpacker.UnpackAsync(directive, tempScriptPath, stoppingToken);
 
                 // Move the unpacked files to the desired installation location
-                ok = fileDistributor.DistributeFiles(tempDir);
-
-                if (!ok)
-                {
-                    logger.LogError("Failed to distribute files to their proper locations.");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Exception when running downloading and installing github archive.");
-                return false;
+                fileDistributor.DistributeFiles(tempDir);
             }
             finally
             {
@@ -106,13 +89,10 @@ namespace Micasa.Cli.Drivers
                     Directory.Delete(tempDir, recursive: true);
                 }
             }
-
-            // Success
-            return true;
         }
 
 
-        public Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public Task UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             throw new NotImplementedException();
         }

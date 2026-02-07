@@ -3,8 +3,6 @@
 
 using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
-using System.Threading;
-using System.Threading.Tasks;
 using Micasa.Cli.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -23,7 +21,7 @@ namespace Micasa.UnitTests.Helpers
         private readonly ILogger<FileDistributor> logger = Substitute.For<ILogger<FileDistributor>>();
         private readonly MockFileData fileData = new("miscellaneous-file-content");
         private readonly MockFileData binaryData = new(BinaryContent);
-        private readonly CancellationToken token = CancellationToken.None;
+
 
         public FileDistributorTests()
         {
@@ -32,7 +30,7 @@ namespace Micasa.UnitTests.Helpers
 
 
         [Fact]
-        public async Task CanHandleFdLinuxArm64()
+        public void CanHandleFdLinuxArm64()
         {
             // Arrange
             var fdDir = $"{DirPath}/fd-v10.3.0-aarch64-unknown-linux-musl";
@@ -55,11 +53,9 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = distributor.DistributeFiles(DirPath);
+            distributor.DistributeFiles(DirPath);
 
             // Assert
-            ok.ShouldBeTrue();
-
             fileSystem.File.Exists($"{HomeDir}/.local/bin/fd").ShouldBeTrue();
             fileSystem.File.Exists($"{HomeDir}/.local/share/man/man1/fd.1").ShouldBeTrue();
 
@@ -68,7 +64,7 @@ namespace Micasa.UnitTests.Helpers
 
 
         [Fact]
-        public async Task CanHandleBatLinuxArm64()
+        public void CanHandleBatLinuxArm64()
         {
             // Arrange
             var batDir = $"{DirPath}/bat-v0.26.1-aarch64-unknown-linux-musl";
@@ -91,18 +87,16 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = distributor.DistributeFiles(DirPath);
+            distributor.DistributeFiles(DirPath);
 
             // Assert
-            ok.ShouldBeTrue();
-
             fileSystem.File.Exists($"{HomeDir}/.local/bin/bat").ShouldBeTrue();
             fileSystem.File.Exists($"{HomeDir}/.local/share/man/man1/bat.1").ShouldBeTrue();
         }
 
 
         [Fact]
-        public async Task CanHandleLazygitLinuxArm64()
+        public void CanHandleLazygitLinuxArm64()
         {
             // Arrange
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
@@ -116,17 +110,15 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = distributor.DistributeFiles(DirPath);
+            distributor.DistributeFiles(DirPath);
 
             // Assert
-            ok.ShouldBeTrue();
-
             fileSystem.File.Exists($"{HomeDir}/.local/bin/lazygit").ShouldBeTrue();
         }
 
 
         [Fact]
-        public async Task CanHandleFzfLinuxArm64()
+        public void CanHandleFzfLinuxArm64()
         {
             // Arrange
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
@@ -138,17 +130,15 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = distributor.DistributeFiles(DirPath);
+            distributor.DistributeFiles(DirPath);
 
             // Assert
-            ok.ShouldBeTrue();
-
             fileSystem.File.Exists($"{HomeDir}/.local/bin/fzf").ShouldBeTrue();
         }
 
 
         [Fact]
-        public async Task CanHandleEzaLinuxArm64()
+        public void CanHandleEzaLinuxArm64()
         {
             // Arrange
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
@@ -160,17 +150,15 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = distributor.DistributeFiles(DirPath);
+            distributor.DistributeFiles(DirPath);
 
             // Assert
-            ok.ShouldBeTrue();
-
             fileSystem.File.Exists($"{HomeDir}/.local/bin/eza").ShouldBeTrue();
         }
 
 
         [Fact]
-        public async Task CanHandleNeovimLinuxArm64()
+        public void CanHandleNeovimLinuxArm64()
         {
             // Arrange
             var nvimDir = $"{DirPath}/nvim-linux-arm64";
@@ -191,11 +179,9 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = distributor.DistributeFiles(DirPath);
+            distributor.DistributeFiles(DirPath);
 
             // Assert
-            ok.ShouldBeTrue();
-
             VerifySymlink(fileSystem, "~/.local/bin/nvim", "~/.local/opt/nvim/bin/nvim");
 
             fileSystem.File.Exists($"{HomeDir}/.local/opt/nvim/lib/nvim/parser/lua.so").ShouldBeTrue();

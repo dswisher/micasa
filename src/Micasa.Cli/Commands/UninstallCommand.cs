@@ -33,12 +33,9 @@ namespace Micasa.Cli.Commands
                 return;
             }
 
-            var ok = await driverResult.Driver.UninstallAsync(driverResult.InstallerDirective!, stoppingToken);
+            await driverResult.Driver.UninstallAsync(driverResult.InstallerDirective!, stoppingToken);
 
-            if (ok)
-            {
-                logger.LogInformation("Removal of {Formula} completed successfully.", options.FormulaName);
-            }
+            logger.LogInformation("Removal of {Formula} completed successfully.", options.FormulaName);
         }
     }
 }

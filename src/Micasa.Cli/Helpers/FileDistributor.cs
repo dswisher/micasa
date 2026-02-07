@@ -1,8 +1,11 @@
 // Copyright (c) Doug Swisher. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Micasa.Cli.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace Micasa.Cli.Helpers
@@ -32,7 +35,7 @@ namespace Micasa.Cli.Helpers
         }
 
 
-        public bool DistributeFiles(string dirPath)
+        public void DistributeFiles(string dirPath)
         {
             var homeDir = environment.GetHomeDirectory();
 
@@ -91,7 +94,7 @@ namespace Micasa.Cli.Helpers
                         }
                     }
 
-                    return true;
+                    return;
                 }
             }
 
@@ -132,7 +135,7 @@ namespace Micasa.Cli.Helpers
                         MoveFile(manPage, targetMan);
                     }
 
-                    return true;
+                    return;
                 }
             }
 
@@ -167,12 +170,10 @@ namespace Micasa.Cli.Helpers
                 var targetBin = fileSystem.Path.Combine(localBinDir, binaryName);
                 MoveFile(simpleBinary, targetBin);
 
-                return true;
+                return;
             }
 
-            logger.LogWarning("No recognizable distribution pattern found in {DirPath}", dirPath);
-
-            return false;
+            throw new MicasaException($"No recognizable distribution pattern found in {dirPath}");
         }
 
 
@@ -180,7 +181,14 @@ namespace Micasa.Cli.Helpers
         {
             logger.LogInformation("...moving file from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
 
-            fileSystem.File.Copy(sourcePath, targetPath, overwrite: true);
+            try
+            {
+                fileSystem.File.Copy(sourcePath, targetPath, overwrite: true);
+            }
+            catch (Exception ex)
+            {
+                throw new MicasaException($"Exception when moving file: {ex.Message}", ex);
+            }
         }
 
 
@@ -188,7 +196,45 @@ namespace Micasa.Cli.Helpers
         {
             logger.LogInformation("...moving directory from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
 
-            fileSystem.Directory.Move(sourcePath, targetPath);
+            try
+            {
+                // Try a simple move first (works if source and target are on the same filesystem)
+                fileSystem.Directory.Move(sourcePath, targetPath);
+            }
+            catch (IOException ex) when (ex.Message.Contains("cross-device"))
+            {
+                // Fall back to copy-and-delete for cross-filesystem moves
+                logger.LogDebug("Cross-device move detected, falling back to copy-and-delete");
+                CopyDirectory(sourcePath, targetPath);
+                fileSystem.Directory.Delete(sourcePath, recursive: true);
+            }
+            catch (Exception ex)
+            {
+                throw new MicasaException($"Exception when moving directory: {ex.Message}", ex);
+            }
+        }
+
+
+        private void CopyDirectory(string sourcePath, string targetPath)
+        {
+            // Create the target directory
+            fileSystem.Directory.CreateDirectory(targetPath);
+
+            // Copy all files
+            foreach (var file in fileSystem.Directory.GetFiles(sourcePath))
+            {
+                var fileName = fileSystem.Path.GetFileName(file);
+                var destFile = fileSystem.Path.Combine(targetPath, fileName);
+                fileSystem.File.Copy(file, destFile, overwrite: true);
+            }
+
+            // Recursively copy subdirectories
+            foreach (var subdir in fileSystem.Directory.GetDirectories(sourcePath))
+            {
+                var subdirName = fileSystem.Path.GetFileName(subdir);
+                var destSubdir = fileSystem.Path.Combine(targetPath, subdirName);
+                CopyDirectory(subdir, destSubdir);
+            }
         }
 
 
@@ -196,7 +242,14 @@ namespace Micasa.Cli.Helpers
         {
             logger.LogInformation("...creating symlink at '{LinkPath}' pointing to '{LinkTarget}'...", linkPath, linkTarget);
 
-            fileSystem.File.CreateSymbolicLink(linkPath, linkTarget);
+            try
+            {
+                fileSystem.File.CreateSymbolicLink(linkPath, linkTarget);
+            }
+            catch (Exception ex)
+            {
+                throw new MicasaException($"Exception when creating symlink: {ex.Message}", ex);
+            }
         }
     }
 }

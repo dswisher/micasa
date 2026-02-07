@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Micasa.Cli.Commands;
+using Micasa.Cli.Exceptions;
 using Micasa.Cli.Options;
 using Micasa.Cli.Options.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,11 +68,17 @@ namespace Micasa.Cli
                 // No errors!
                 return 0;
             }
+            catch (MicasaException ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                return 1;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
 
-                return 1;
+                return 2;
             }
         }
     }

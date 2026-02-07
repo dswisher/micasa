@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Micasa.Cli.Exceptions;
 using Micasa.Cli.Helpers;
 using Micasa.Cli.Models;
 using Microsoft.Extensions.Logging;
@@ -34,13 +35,12 @@ namespace Micasa.Cli.Drivers
         }
 
 
-        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // Sanity check
             if (string.IsNullOrEmpty(directive.InstallerUrl))
             {
-                logger.LogError("ShellScriptDriver requires an InstallerUrl in the installer directive.");
-                return false;
+                throw new MicasaException("ShellScriptDriver requires an InstallerUrl in the installer directive.");
             }
 
             // Get a temporary path for the install script that we're about to download
@@ -55,18 +55,7 @@ namespace Micasa.Cli.Drivers
                 // Run the install script, via the shell
                 var installResult = await commandRunner.RunCommandAsync("sh", tempScriptPath, stoppingToken);
 
-                if (!commandRunner.VerifyExitCodeZero(installResult))
-                {
-                    return false;
-                }
-
-                // We did it!
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Exception when running downloading and installing shell script.");
-                return false;
+                commandRunner.VerifyExitCodeZero(installResult);
             }
             finally
             {
@@ -80,7 +69,7 @@ namespace Micasa.Cli.Drivers
         }
 
 
-        public Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public Task UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             throw new NotImplementedException();
         }

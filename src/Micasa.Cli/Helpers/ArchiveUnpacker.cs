@@ -19,7 +19,7 @@ namespace Micasa.Cli.Helpers
         }
 
 
-        public async Task<bool> UnpackAsync(InstallerDirective directive, string archivePath, CancellationToken stoppingToken)
+        public async Task UnpackAsync(InstallerDirective directive, string archivePath, CancellationToken stoppingToken)
         {
             // Get the working directory that we'll use when unpacking
             var workDir = Path.GetDirectoryName(archivePath);
@@ -34,7 +34,8 @@ namespace Micasa.Cli.Helpers
             switch (extension)
             {
                 case ".tar.gz":
-                    return await UnpackTarGzAsync(archivePath, workDir, stoppingToken);
+                    await UnpackTarGzAsync(archivePath, workDir, stoppingToken);
+                    break;
 
                 default:
                     throw new NotImplementedException($"Archive unpacking for files with extension '{extension}' is not implemented.");
@@ -42,12 +43,12 @@ namespace Micasa.Cli.Helpers
         }
 
 
-        private async Task<bool> UnpackTarGzAsync(string archivePath, string workDir, CancellationToken stoppingToken)
+        private async Task UnpackTarGzAsync(string archivePath, string workDir, CancellationToken stoppingToken)
         {
             // Run the command
             var unpackResult = await commandRunner.RunCommandAsync("tar", $"xvfz {archivePath}", workDir, stoppingToken);
 
-            return commandRunner.VerifyExitCodeZero(unpackResult);
+            commandRunner.VerifyExitCodeZero(unpackResult);
         }
 
 

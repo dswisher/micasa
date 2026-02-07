@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Micasa.Cli.Exceptions;
 using Micasa.Cli.Models;
 using Microsoft.Extensions.Logging;
 
@@ -126,11 +127,11 @@ namespace Micasa.Cli.Helpers
         }
 
 
-        public bool VerifyExitCodeZero(CommandRunnerResult statusResult)
+        public void VerifyExitCodeZero(CommandRunnerResult statusResult)
         {
             if (statusResult.ExitCode == 0)
             {
-                return true;
+                return;
             }
 
             logger.LogError("'{Common} {Arguments}' command returned non-zero exit code, {ExitCode}.",
@@ -141,7 +142,7 @@ namespace Micasa.Cli.Helpers
                 logger.LogInformation("-> Standard Error:\n{StandardError}", statusResult.StandardError);
             }
 
-            return false;
+            throw new MicasaException("Command returned non-zero exit code.");
         }
 
 

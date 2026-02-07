@@ -11,7 +11,7 @@ namespace Micasa.Cli.Drivers
     {
         Task<FormulaDetails?> GetInfoAsync(InstallerDirective directive, CancellationToken stoppingToken);
 
-        Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken);
-        Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken);
+        Task InstallAsync(InstallerDirective directive, CancellationToken stoppingToken);
+        Task UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken);
     }
 }

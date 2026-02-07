@@ -5,6 +5,6 @@ namespace Micasa.Cli.Helpers
 {
     public interface IFileDistributor
     {
-        bool DistributeFiles(string dirPath);
+        void DistributeFiles(string dirPath);
     }
 }

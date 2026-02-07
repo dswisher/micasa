@@ -29,24 +29,18 @@ namespace Micasa.Cli.Drivers
         }
 
 
-        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // TODO - check to make sure the package is not already installed
 
             // TODO - only apply sudo if we really need to
             var installResult = await commandRunner.RunCommandAsync("sudo", $"dnf install -y {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(installResult))
-            {
-                return false;
-            }
-
-            // Success!
-            return true;
+            commandRunner.VerifyExitCodeZero(installResult);
         }
 
 
-        public Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public Task UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             throw new System.NotImplementedException();
         }

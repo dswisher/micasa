@@ -32,10 +32,7 @@ namespace Micasa.Cli.Drivers
             // Ask the package manager for the status of the formula
             var statusResult = await commandRunner.RunCommandAsync("apt-cache", $"policy {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(statusResult))
-            {
-                return null;
-            }
+            commandRunner.VerifyExitCodeZero(statusResult);
 
             if (string.IsNullOrEmpty(statusResult.StandardOutput))
             {
@@ -52,37 +49,25 @@ namespace Micasa.Cli.Drivers
         }
 
 
-        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // TODO - check to make sure the package is not already installed
 
             // TODO - only apply sudo if we really need to
             var installResult = await commandRunner.RunCommandAsync("sudo", $"apt-get install -y {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(installResult))
-            {
-                return false;
-            }
-
-            // Success!
-            return true;
+            commandRunner.VerifyExitCodeZero(installResult);
         }
 
 
-        public async Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // TODO - check to make sure the package is installed first
 
             // TODO - only apply sudo if we really need to
             var uninstallResult = await commandRunner.RunCommandAsync("sudo", $"apt-get remove -y {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(uninstallResult))
-            {
-                return false;
-            }
-
-            // Success!
-            return true;
+            commandRunner.VerifyExitCodeZero(uninstallResult);
         }
     }
 }

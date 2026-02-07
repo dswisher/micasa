@@ -9,6 +9,6 @@ namespace Micasa.Cli.Helpers
 {
     public interface IArchiveUnpacker
     {
-        Task<bool> UnpackAsync(InstallerDirective directive, string archivePath, CancellationToken stoppingToken);
+        Task UnpackAsync(InstallerDirective directive, string archivePath, CancellationToken stoppingToken);
     }
 }

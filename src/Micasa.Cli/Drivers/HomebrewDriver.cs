@@ -45,35 +45,23 @@ namespace Micasa.Cli.Drivers
         }
 
 
-        public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // TODO - check to make sure the package is not already installed
 
             var installResult = await commandRunner.RunCommandAsync("brew", $"install {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(installResult))
-            {
-                return false;
-            }
-
-            // Success!
-            return true;
+            commandRunner.VerifyExitCodeZero(installResult);
         }
 
 
-        public async Task<bool> UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
+        public async Task UninstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
             // TODO - check to make sure the package is installed first
 
             var uninstallResult = await commandRunner.RunCommandAsync("brew", $"uninstall {directive.PackageId}", stoppingToken);
 
-            if (!commandRunner.VerifyExitCodeZero(uninstallResult))
-            {
-                return false;
-            }
-
-            // Success!
-            return true;
+            commandRunner.VerifyExitCodeZero(uninstallResult);
         }
     }
 }
