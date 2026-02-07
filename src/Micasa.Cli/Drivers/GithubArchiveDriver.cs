@@ -86,7 +86,7 @@ namespace Micasa.Cli.Drivers
                 }
 
                 // Move the unpacked files to the desired installation location
-                ok = await fileDistributor.DistributeFilesAsync(tempDir, stoppingToken);
+                ok = fileDistributor.DistributeFiles(tempDir);
 
                 if (!ok)
                 {

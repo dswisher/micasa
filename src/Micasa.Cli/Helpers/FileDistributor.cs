@@ -2,8 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.IO.Abstractions;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace Micasa.Cli.Helpers
@@ -33,21 +32,147 @@ namespace Micasa.Cli.Helpers
         }
 
 
-        public async Task<bool> DistributeFilesAsync(string dirPath, CancellationToken stoppingToken)
+        public bool DistributeFiles(string dirPath)
         {
-            // TODO - implement this for real - this just handles one case to verify the unit test works
+            var homeDir = environment.GetHomeDirectory();
 
-            // TODO - only try to create the target directories if they do not exist
-            fileSystem.Directory.CreateDirectory($"{environment.GetHomeDirectory()}/.local/bin");
-            fileSystem.Directory.CreateDirectory($"{environment.GetHomeDirectory()}/.local/share/man/man1");
+            // Get subdirectories
+            var subdirs = fileSystem.Directory.GetDirectories(dirPath);
 
-            MoveFile($"{dirPath}/fd-v10.3.0-aarch64-unknown-linux-musl/fd", $"{environment.GetHomeDirectory()}/.local/bin/fd");
-            MoveFile($"{dirPath}/fd-v10.3.0-aarch64-unknown-linux-musl/fd.1", $"{environment.GetHomeDirectory()}/.local/share/man/man1/fd.1");
+            // Case 3: Whole tree (has bin/, lib/, or share/ subdirectories)
+            foreach (var subdir in subdirs)
+            {
+                var subdirName = fileSystem.Path.GetFileName(subdir);
+                var binSubdir = fileSystem.Path.Combine(subdir, "bin");
+                var libSubdir = fileSystem.Path.Combine(subdir, "lib");
+                var shareSubdir = fileSystem.Path.Combine(subdir, "share");
 
-            // TODO - does this method even need to be async?
-            await Task.CompletedTask;
+                var hasBinDir = fileSystem.Directory.Exists(binSubdir);
+                var hasLibDir = fileSystem.Directory.Exists(libSubdir);
+                var hasShareDir = fileSystem.Directory.Exists(shareSubdir);
 
-            return true;
+                if (hasBinDir || hasLibDir || hasShareDir)
+                {
+                    // Determine the target name from the binary name if possible
+                    var targetName = subdirName;
+                    if (hasBinDir)
+                    {
+                        var binFiles = fileSystem.Directory.GetFiles(binSubdir);
+                        if (binFiles.Length > 0)
+                        {
+                            var firstBinary = binFiles[0];
+                            var binaryName = fileSystem.Path.GetFileName(firstBinary);
+                            targetName = binaryName;
+                        }
+                    }
+
+                    // Move the entire tree to ~/.local/opt/{targetName}
+                    var optDir = fileSystem.Path.Combine(homeDir, ".local", "opt");
+                    fileSystem.Directory.CreateDirectory(optDir);
+
+                    var targetDir = fileSystem.Path.Combine(optDir, targetName);
+                    MoveDirectory(subdir, targetDir);
+
+                    // Create symlinks for binaries
+                    if (hasBinDir)
+                    {
+                        var targetBinDir = fileSystem.Path.Combine(targetDir, "bin");
+                        var binaries = fileSystem.Directory.GetFiles(targetBinDir);
+                        var localBinDir = fileSystem.Path.Combine(homeDir, ".local", "bin");
+                        fileSystem.Directory.CreateDirectory(localBinDir);
+
+                        foreach (var binary in binaries)
+                        {
+                            var binaryName = fileSystem.Path.GetFileName(binary);
+                            var linkPath = fileSystem.Path.Combine(localBinDir, binaryName);
+                            var linkTarget = fileSystem.Path.Combine(targetDir, "bin", binaryName);
+
+                            CreateSymLink(linkPath, linkTarget);
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            // Case 2: Binary and optional man page in subdirectory
+            foreach (var subdir in subdirs)
+            {
+                var files = fileSystem.Directory.GetFiles(subdir);
+
+                // Look for executable file (heuristic: no extension, not a doc file)
+                var binary = files.FirstOrDefault(f =>
+                {
+                    var name = fileSystem.Path.GetFileName(f);
+                    var ext = fileSystem.Path.GetExtension(f);
+                    return string.IsNullOrEmpty(ext) &&
+                           !name.Contains("LICENSE") &&
+                           !name.Contains("README") &&
+                           !name.Contains("CHANGELOG");
+                });
+
+                if (binary != null)
+                {
+                    var binaryName = fileSystem.Path.GetFileName(binary);
+                    var localBinDir = fileSystem.Path.Combine(homeDir, ".local", "bin");
+                    fileSystem.Directory.CreateDirectory(localBinDir);
+
+                    var targetBin = fileSystem.Path.Combine(localBinDir, binaryName);
+                    MoveFile(binary, targetBin);
+
+                    // Check for man page
+                    var manPage = files.FirstOrDefault(f => fileSystem.Path.GetExtension(f) == ".1");
+                    if (manPage != null)
+                    {
+                        var manName = fileSystem.Path.GetFileName(manPage);
+                        var manDir = fileSystem.Path.Combine(homeDir, ".local", "share", "man", "man1");
+                        fileSystem.Directory.CreateDirectory(manDir);
+
+                        var targetMan = fileSystem.Path.Combine(manDir, manName);
+                        MoveFile(manPage, targetMan);
+                    }
+
+                    return true;
+                }
+            }
+
+            // Case 1: Binary in same directory as archive
+            var dirFiles = fileSystem.Directory.GetFiles(dirPath);
+            var simpleBinary = dirFiles.FirstOrDefault(f =>
+            {
+                var name = fileSystem.Path.GetFileName(f);
+                var ext = fileSystem.Path.GetExtension(f);
+
+                // Skip archives
+                if (ext == ".gz" || ext == ".zip" || ext == ".tgz" || ext == ".tar")
+                {
+                    return false;
+                }
+
+                // Skip documentation files
+                if (ext == ".md" || name.Contains("LICENSE") || name.Contains("README") || name.Contains("CHANGELOG"))
+                {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (simpleBinary != null)
+            {
+                var binaryName = fileSystem.Path.GetFileName(simpleBinary);
+                var localBinDir = fileSystem.Path.Combine(homeDir, ".local", "bin");
+                fileSystem.Directory.CreateDirectory(localBinDir);
+
+                var targetBin = fileSystem.Path.Combine(localBinDir, binaryName);
+                MoveFile(simpleBinary, targetBin);
+
+                return true;
+            }
+
+            logger.LogWarning("No recognizable distribution pattern found in {DirPath}", dirPath);
+
+            return false;
         }
 
 
@@ -61,14 +186,17 @@ namespace Micasa.Cli.Helpers
 
         private void MoveDirectory(string sourcePath, string targetPath)
         {
-            // TODO - implement this to handle cases like nvim
+            logger.LogInformation("...moving directory from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
+
+            fileSystem.Directory.Move(sourcePath, targetPath);
         }
 
 
-        private void CreateSymLink(string sourcePath, string targetPath)
+        private void CreateSymLink(string linkPath, string linkTarget)
         {
-            // Create a link from sourcePath to targetPath, for example, for nvim, create a link from "~/.local/bin/nvim" to "~/.local/opt/nvim/bin/nvim"
-            fileSystem.File.CreateSymbolicLink(sourcePath, targetPath);
+            logger.LogInformation("...creating symlink at '{LinkPath}' pointing to '{LinkTarget}'...", linkPath, linkTarget);
+
+            fileSystem.File.CreateSymbolicLink(linkPath, linkTarget);
         }
     }
 }

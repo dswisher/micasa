@@ -55,7 +55,7 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = await distributor.DistributeFilesAsync(DirPath, token);
+            var ok = distributor.DistributeFiles(DirPath);
 
             // Assert
             ok.ShouldBeTrue();
@@ -91,7 +91,7 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = await distributor.DistributeFilesAsync(DirPath, token);
+            var ok = distributor.DistributeFiles(DirPath);
 
             // Assert
             ok.ShouldBeTrue();
@@ -116,7 +116,7 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = await distributor.DistributeFilesAsync(DirPath, token);
+            var ok = distributor.DistributeFiles(DirPath);
 
             // Assert
             ok.ShouldBeTrue();
@@ -138,7 +138,7 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = await distributor.DistributeFilesAsync(DirPath, token);
+            var ok = distributor.DistributeFiles(DirPath);
 
             // Assert
             ok.ShouldBeTrue();
@@ -160,7 +160,7 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = await distributor.DistributeFilesAsync(DirPath, token);
+            var ok = distributor.DistributeFiles(DirPath);
 
             // Assert
             ok.ShouldBeTrue();
@@ -191,7 +191,7 @@ namespace Micasa.UnitTests.Helpers
             var distributor = new FileDistributor(fileSystem, environment, logger);
 
             // Act
-            var ok = await distributor.DistributeFilesAsync(DirPath, token);
+            var ok = distributor.DistributeFiles(DirPath);
 
             // Assert
             ok.ShouldBeTrue();
@@ -200,13 +200,6 @@ namespace Micasa.UnitTests.Helpers
 
             fileSystem.File.Exists($"{HomeDir}/.local/opt/nvim/lib/nvim/parser/lua.so").ShouldBeTrue();
             fileSystem.File.Exists($"{HomeDir}/.local/opt/nvim/share/nvim/man/man1/nvim.1").ShouldBeTrue();
-
-#if false
-  fileSystem.File.CreateSymbolicLink(
-      "~/.local/bin/nvim",
-      "~/.local/opt/nvim/bin/nvim"
-  );
-#endif
         }
 
 
@@ -220,10 +213,14 @@ namespace Micasa.UnitTests.Helpers
 
         private static void VerifySymlink(MockFileSystem fileSystem, string linkPath, string expectedTarget)
         {
-            var target = fileSystem.File.ResolveLinkTarget(linkPath, returnFinalTarget: false);
+            // Expand ~ to home directory for MockFileSystem
+            var expandedLinkPath = linkPath.Replace("~", HomeDir);
+            var expandedExpectedTarget = expectedTarget.Replace("~", HomeDir);
+
+            var target = fileSystem.File.ResolveLinkTarget(expandedLinkPath, returnFinalTarget: false);
 
             target.ShouldNotBeNull();
-            target.FullName.ShouldBe(expectedTarget);
+            target.FullName.ShouldBe(expandedExpectedTarget);
         }
     }
 }
