@@ -1,6 +1,7 @@
 // Copyright (c) Doug Swisher. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO.Abstractions;
 using Micasa.Cli.Commands;
 using Micasa.Cli.Drivers;
 using Micasa.Cli.GitHub;
@@ -26,9 +27,14 @@ namespace Micasa.Cli
             // We download stuff using HTTPS
             services.AddHttpClient();
 
+            // Testable IO
+            services.AddSingleton<IFileSystem, FileSystem>();
+
             // Helpers
             services.AddSingleton<IArchiveUnpacker, ArchiveUnpacker>();
             services.AddSingleton<ICommandRunner, CommandRunner>();
+            services.AddSingleton<IEnvironmentHelper, EnvironmentHelper>();
+            services.AddSingleton<IFileDistributor, FileDistributor>();
             services.AddSingleton<IFileDownloader, FileDownloader>();
             services.AddSingleton<IFormulaReader, FormulaReader>();
             services.AddSingleton<IPlatformDecoder, PlatformDecoder>();

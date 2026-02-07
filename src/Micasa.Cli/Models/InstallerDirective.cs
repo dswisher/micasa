@@ -25,21 +25,13 @@ namespace Micasa.Cli.Models
         public string? Executable { get; set; }
 
         /// <summary>
-        /// For drivers that download an installer (shell script, .deb file, etc), this is the URL to download from.
+        /// For drivers that download an installer (shell script, .deb file, etc.), this is the URL to download from.
         /// </summary>
         public string? InstallerUrl { get; set; }
 
         /// <summary>
-        /// The URL of the github repo for the project, used to fetch latest releases.
+        /// The URL of the GitHub repo for the project, used to fetch latest releases.
         /// </summary>
         public string? RepoUrl { get; set; }
-
-        /// <summary>
-        /// For .appimage files, indicates whether FUSE is required to run the AppImage.
-        /// </summary>
-        /// <remarks>
-        /// This will typically trigger unpacking the AppImage (neovim, for example).
-        /// </remarks>
-        public bool? RequiresFuse { get; set; }
     }
 }

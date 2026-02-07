@@ -84,14 +84,14 @@ namespace Micasa.Cli.GitHub
         {
             var score = 0;
 
-            // Prefer appimage files (highest priority)
-            if (name.EndsWith(".appimage", StringComparison.OrdinalIgnoreCase))
+            // Prefer tar.gz files (highest priority)
+            if (name.EndsWith(".tar.gz", StringComparison.OrdinalIgnoreCase))
             {
                 score += 1000;
             }
 
-            // Prefer tar.gz files (second priority)
-            if (name.EndsWith(".tar.gz", StringComparison.OrdinalIgnoreCase))
+            // Prefer appimage files (second priority)
+            if (name.EndsWith(".appimage", StringComparison.OrdinalIgnoreCase))
             {
                 score += 900;
             }
@@ -99,7 +99,7 @@ namespace Micasa.Cli.GitHub
             // Prefer "musl" over "gnu"
             if (name.Contains("musl", StringComparison.OrdinalIgnoreCase))
             {
-                score += 100;
+                score += 90;
             }
             else if (name.Contains("gnu", StringComparison.OrdinalIgnoreCase))
             {

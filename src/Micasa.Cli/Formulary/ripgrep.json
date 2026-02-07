@@ -3,7 +3,7 @@
   "platforms": {
     "amazon-2023|debian|ubuntu": {
       "tool": "github-archive",
-      "repo-url": "https://github.com/BurntSushi/ripgrep/",
+      "repo-url": "https://github.com/BurntSushi/ripgrep",
       "executable": "rg"
     },
     "macos": {

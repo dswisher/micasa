@@ -44,8 +44,8 @@ namespace Micasa.UnitTests.GitHub
         [InlineData("eza.json", "arm64", "https://github.com/eza-community/eza/releases/download/v0.23.4/eza_aarch64-unknown-linux-gnu.tar.gz")]
         [InlineData("lazygit.json", "amd64", "https://github.com/jesseduffield/lazygit/releases/download/v0.58.1/lazygit_0.58.1_linux_x86_64.tar.gz")]
         [InlineData("lazygit.json", "arm64", "https://github.com/jesseduffield/lazygit/releases/download/v0.58.1/lazygit_0.58.1_linux_arm64.tar.gz")]
-        [InlineData("neovim.json", "amd64", "https://github.com/neovim/neovim/releases/download/v0.11.6/nvim-linux-x86_64.appimage")]
-        [InlineData("neovim.json", "arm64", "https://github.com/neovim/neovim/releases/download/v0.11.6/nvim-linux-arm64.appimage")]
+        [InlineData("neovim.json", "amd64", "https://github.com/neovim/neovim/releases/download/v0.11.6/nvim-linux-x86_64.tar.gz")]
+        [InlineData("neovim.json", "arm64", "https://github.com/neovim/neovim/releases/download/v0.11.6/nvim-linux-arm64.tar.gz")]
         [InlineData("ripgrep.json", "amd64", "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-x86_64-unknown-linux-musl.tar.gz")]
         [InlineData("ripgrep.json", "arm64", "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-aarch64-unknown-linux-gnu.tar.gz")]
         private void CanFindArchive(string filename, string arch, string expectedUrl)

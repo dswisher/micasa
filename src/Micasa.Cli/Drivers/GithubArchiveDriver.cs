@@ -18,6 +18,7 @@ namespace Micasa.Cli.Drivers
         private readonly IGitHubArchiveSeeker archiveSeeker;
         private readonly IFileDownloader fileDownloader;
         private readonly IArchiveUnpacker archiveUnpacker;
+        private readonly IFileDistributor fileDistributor;
         private readonly ILogger<GithubArchiveDriver> logger;
 
 
@@ -26,12 +27,14 @@ namespace Micasa.Cli.Drivers
             IGitHubArchiveSeeker archiveSeeker,
             IFileDownloader fileDownloader,
             IArchiveUnpacker archiveUnpacker,
+            IFileDistributor fileDistributor,
             ILogger<GithubArchiveDriver> logger)
         {
             this.infoFetcher = infoFetcher;
             this.archiveSeeker = archiveSeeker;
             this.fileDownloader = fileDownloader;
             this.archiveUnpacker = archiveUnpacker;
+            this.fileDistributor = fileDistributor;
             this.logger = logger;
         }
 
@@ -44,6 +47,8 @@ namespace Micasa.Cli.Drivers
 
         public async Task<bool> InstallAsync(InstallerDirective directive, CancellationToken stoppingToken)
         {
+            string? tempDir = null;
+
             try
             {
                 // Fetch info on the latest release from GitHub
@@ -59,7 +64,7 @@ namespace Micasa.Cli.Drivers
                 var bestAsset = archiveSeeker.FindBestAsset(releaseInfo);
 
                 // Download the archive to a temporary location, making sure the directory exists
-                var tempDir = Path.Join(Path.GetTempPath(), Path.GetRandomFileName());
+                tempDir = Path.Join(Path.GetTempPath(), Path.GetRandomFileName());
                 var tempScriptPath = Path.Join(tempDir, bestAsset.Name);
 
                 if (Directory.Exists(tempDir))
@@ -72,10 +77,22 @@ namespace Micasa.Cli.Drivers
                 await fileDownloader.DownloadFileAsync(bestAsset.BrowserDownloadUrl, tempScriptPath, stoppingToken);
 
                 // Unpack the archive
-                await archiveUnpacker.UnpackAsync(directive, tempScriptPath, stoppingToken);
+                var ok = await archiveUnpacker.UnpackAsync(directive, tempScriptPath, stoppingToken);
+
+                if (!ok)
+                {
+                    logger.LogError("Failed to unpack the downloaded archive.");
+                    return false;
+                }
 
                 // Move the unpacked files to the desired installation location
-                // TODO - move files to installation location
+                ok = await fileDistributor.DistributeFilesAsync(tempDir, stoppingToken);
+
+                if (!ok)
+                {
+                    logger.LogError("Failed to distribute files to their proper locations.");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
@@ -84,7 +101,10 @@ namespace Micasa.Cli.Drivers
             }
             finally
             {
-                // TODO - clean up temporary files
+                if (tempDir != null)
+                {
+                    Directory.Delete(tempDir, recursive: true);
+                }
             }
 
             // Success

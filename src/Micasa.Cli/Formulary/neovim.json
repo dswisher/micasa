@@ -4,8 +4,7 @@
     "amazon-2023|debian|ubuntu": {
       "tool": "github-archive",
       "repo-url": "https://github.com/neovim/neovim",
-      "executable": "nvim",
-      "requires-fuse": true
+      "executable": "nvim"
     },
     "macos": {
       "tool": "homebrew",
