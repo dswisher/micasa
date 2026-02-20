@@ -179,7 +179,7 @@ namespace Micasa.Cli.Helpers
 
         private void MoveFile(string sourcePath, string targetPath)
         {
-            logger.LogInformation("...moving file from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
+            logger.LogDebug("...moving file from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
 
             try
             {
@@ -194,7 +194,7 @@ namespace Micasa.Cli.Helpers
 
         private void MoveDirectory(string sourcePath, string targetPath)
         {
-            logger.LogInformation("...moving directory from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
+            logger.LogDebug("...moving directory from '{SourcePath}' to '{TargetPath}'...", sourcePath, targetPath);
 
             try
             {
@@ -240,7 +240,7 @@ namespace Micasa.Cli.Helpers
 
         private void CreateSymLink(string linkPath, string linkTarget)
         {
-            logger.LogInformation("...creating symlink at '{LinkPath}' pointing to '{LinkTarget}'...", linkPath, linkTarget);
+            logger.LogDebug("...creating symlink at '{LinkPath}' pointing to '{LinkTarget}'...", linkPath, linkTarget);
 
             try
             {
